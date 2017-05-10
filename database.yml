@@ -1,0 +1,13 @@
+development:
+  host: localhost
+  user: kuretsuki
+  password: kure
+  dbname: kuredb
+  port: 5432
+
+product:
+  host: localhost
+  user: kuretsuki  #!remove
+  password: kure   #!remove
+  dbname: productdb #rename
+  port: 5432
