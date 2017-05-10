@@ -25,3 +25,17 @@ value int not null);"
   end
   
 end
+
+desc 'twitter authorization'
+task :auth do
+  hash = Hash.new
+  print "consumer_key: "
+  hash["consumer_key"] = STDIN.gets.chomp
+  print "consumer_secret: "
+  hash["consumer_secret"] = STDIN.gets.chomp
+  print "access_token: "
+  hash["access_token"] = STDIN.gets.chomp
+  print "access_token_secret: "
+  hash["access_token_secret"] = STDIN.gets.chomp
+  YAML.dump(hash, File.open("config/twitter_auth.yml", "w"))
+end

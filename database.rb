@@ -4,7 +4,7 @@ require 'active_record'
 require 'yaml'
 Bundler.require
 
-yml = YAML.load_file("database.yml")["product"]
+yml = YAML.load_file("config/database.yml")["product"]
 yml[:adapter] = "postgresql"
 ActiveRecord::Base.establish_connection(yml)
 
