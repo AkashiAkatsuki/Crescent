@@ -4,13 +4,13 @@ Bundler.require
 require 'active_record'
 require './core.rb'
 
-kure = Core.new("Kuretsuki")
-puts kure.name + " got up."
+core = Core.new
+puts core.name + " got up."
 
 while true
   print '> '
   input = gets
   input.chomp!
   break if input ==''
-  puts kure.name + "> " + kure.response(input)
+  puts core.name + "> " + core.response(input)
 end
