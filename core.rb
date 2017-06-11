@@ -26,7 +26,7 @@ class Core
     generate_markov(nouns.sample.id)
   end
 
-  def speak
+  def speak(input, screen_name: "", name: "")
     
   end
 

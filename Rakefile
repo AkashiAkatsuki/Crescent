@@ -1,6 +1,7 @@
 #encoding: utf-8
 require 'pg'
 require 'yaml'
+require './core.rb'
 
 desc 'default'
 task :default do
@@ -11,25 +12,36 @@ namespace :db do
 
   desc 'build database and table'
   task :create do
-    yml = YAML.load_file("config/database.yml")
-    yml = yml[yml["mode"]]
-    system("createdb -E UTF8 -T templete0 " + yml["dbname"])
+    puts "Please 'rake db:config'"  unless yml = YAML.load_file("config/database.yml")
+    system("createdb -E UTF8 " + yml["dbname"])
     connection = PG::connect(yml)
-    connection.exec(
-"create table words(
+    connection.exec("
+create table words(
 id serial not null,
 name text not null,
 category int not null,
-value int not null);"
-    )
-    connection.exec(
-"create table markovs(
+value int not null);")
+    connection.exec("
+create table markovs(
 id serial not null,
 prefix1 int not null,
 prefix2 int not null,
-suffix int not null);"
-    )
+suffix int not null);")
     connection.finish
+  end
+  
+  desc 'database setting'
+  task 'config' do
+    hash = Hash.new
+    hash["host"] = "localhost"
+    print "user: "
+    hash["user"] = STDIN.gets.chomp
+    print "password: "
+    hash["password"] = STDIN.gets.chomp
+    print "dbname: "
+    hash["dbname"] = STDIN.gets.chomp
+    hash["port"] = "5432"
+    YAML.dump(hash, File.open("config/database.yml", "w"))
   end
   
 end
@@ -48,10 +60,13 @@ task :auth do
   YAML.dump(hash, File.open("config/twitter_auth.yml", "w"))
 end
 
-desc 'development <--> product'
-task :mode, ["name"] do
-  hash = YAML.load_file("config/database.yml")
-  print("development or product: ")
-  hash["mode"] = STDIN.gets.chomp
-  YAML.dump(hash, File.open("config/database.yml", "w"))
+desc 'listening with textfile'
+task :name, [:file] do |task, args|
+  core = Core.new
+  puts core.name + " got up."
+  File.open(args[:file], "r").read do |f|
+    f.each_line do |line|
+      core.listen(line)
+    end
+  end
 end

@@ -6,7 +6,6 @@ require './word.rb'
 require './markov.rb'
 
 yml = YAML.load_file("config/database.yml")
-yml = yml[yml["mode"]]
 yml[:adapter] = "postgresql"
 ActiveRecord::Base.establish_connection(yml)
 
@@ -23,13 +22,14 @@ module Dictionary
                     "感動詞" => 8,
                     "*" => 9
                   }
-
+    
+  
   def convert(input)
     mecabs = Array.new #For kill MeCabError
     words = Array.new
     Natto::MeCab.new.enum_parse(input).each do |n|
       mecabs.push Hash[:name, n.surface,
-                      :category, CATEGORY_HASH[n.feature.split(",").first]]
+                       :category, CATEGORY_HASH[n.feature.split(",").first]]
     end
     mecabs.each do |m|
       if m[:category].nil?
@@ -43,8 +43,21 @@ module Dictionary
     words
   end
 
+  def learn_value(words)
+    ave = 0
+    words.select! {|w| {0, 1, 2}.include? w.category}
+    words.each do |w|
+      ave += find_by(id: w.id).value
+    end
+    ave /= words.size
+    words.each do |w|
+      # w.value *= ave
+    end
+  end
+  
   def learn_markov(words)
     words.each_cons(3) do |w1, w2, w3|
+      next if w1 == -1 || w2 == -1
       Markov.find_or_create_by(
         prefix1: w1.id,
         prefix2: w2.id,
