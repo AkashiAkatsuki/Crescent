@@ -1,6 +1,5 @@
 # coding: utf-8
 require 'natto'
-require 'active_record'
 require 'yaml'
 require './word.rb'
 require './markov.rb'
@@ -22,7 +21,6 @@ module Dictionary
                     "感動詞" => 8,
                     "*" => 9
                   }
-    
   
   def convert(input)
     mecabs = Array.new #For kill MeCabError
@@ -45,7 +43,7 @@ module Dictionary
 
   def learn_value(words)
     ave = 0
-    words.select! {|w| {0, 1, 2}.include? w.category}
+    words.select! {|w| Array[0, 1, 2, 8].include? w.category}
     words.each do |w|
       ave += find_by(id: w.id).value
     end

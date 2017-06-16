@@ -8,9 +8,18 @@ core = Core.new
 puts core.name + " got up."
 
 while true
-  print '> '
-  input = gets
-  input.chomp!
-  break if input ==''
-  puts core.name + "> " + core.response(input)
+  print 'MENU (1)Talk:'
+  case gets.to_i
+  when 1 then
+    while true
+      print '> '
+      input = gets
+      input.chomp!
+      break if input == ''
+      puts core.name + "> " + core.response(input)
+    end
+  else
+    break
+  end
+  
 end

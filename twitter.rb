@@ -17,7 +17,7 @@ class TwitterManager
     @client_stream.user do |tweet|
       if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
         if tweet.text.include?("@" + @screen_name)
-          p format_text(tweet.text)
+          puts format_text(tweet.text)
           # reply
           response = @user.response(format_text(tweet.text),
                                     name: tweet.user.name,
@@ -27,9 +27,19 @@ class TwitterManager
         else
           #timeline
           puts format_text(tweet.text)
-          @user.listen(format_text(tweet.text),
-                       name: tweet.user.name,
-                       screen_name: tweet.user.screen_name)
+          words = @user.listen(format_text(tweet.text),
+                               name: tweet.user.name,
+                               screen_name: tweet.user.screen_name)
+          words.select{|w| Array[0, 1, 2, 8].include? w.category}.each do |w|
+            Thread.new do
+              @client_rest.search(w[:name] + " exclude:retweets",
+                                  result_type: "popular",
+                                  locale: "ja").first(10).each do |search|
+                puts format_text(search.text)
+                @user.listen(format_text(search.text))
+              end
+            end
+          end
         end
       end
     end

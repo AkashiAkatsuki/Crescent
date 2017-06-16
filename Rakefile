@@ -61,10 +61,12 @@ task :auth do
 end
 
 desc 'listening with textfile'
-task :name, [:file] do |task, args|
+task :study do
   core = Core.new
   puts core.name + " got up."
-  File.open(args[:file], "r").read do |f|
+  print "file name:"
+  name = gets
+  File.open(name, "r").read do |f|
     f.each_line do |line|
       core.listen(line)
     end
