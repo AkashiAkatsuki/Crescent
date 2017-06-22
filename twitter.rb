@@ -17,11 +17,13 @@ class TwitterManager
     @client_stream.user do |tweet|
       if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
         if tweet.text.include?("@" + @screen_name)
+          #reply
           puts format_text(tweet.text)
-          # reply
-          response = @user.response(format_text(tweet.text),
-                                    name: tweet.user.name,
-                                    screen_name: tweet.user.screen_name)
+          words = @user.listen(format_text(tweet.text),
+                               name: tweet.user.name,
+                               screen_name: tweet.user.screen_name)
+          response = @user.speak(name: tweet.user.name,
+                                 screen_name: tweet.user.screen_name)
           @client_rest.update("@" + tweet.user.screen_name + " " + response,
                               in_reply_to_status_id: tweet.id)
         else

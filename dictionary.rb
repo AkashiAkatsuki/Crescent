@@ -73,7 +73,8 @@ module Dictionary
     end
     str = ""
     seq.each do |id|
-      str << Word.find_by(id: id).name
+      w = Word.find_by(id: id)
+      str << w.name unless w.nil?
     end
     str
   end
