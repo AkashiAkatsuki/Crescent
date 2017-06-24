@@ -16,11 +16,9 @@ while true
       input = gets
       input.chomp!
       break if input == ''
-      words = core.listen(input)
-      puts core.name + "> " + core.speak
+      puts core.name + "> " + core.response(input, member: "Owner")
     end
   else
     break
-  end
-  
+  end  
 end

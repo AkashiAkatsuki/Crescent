@@ -18,35 +18,31 @@ class TwitterManager
       if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
         if tweet.text.include?("@" + @screen_name)
           #reply
-          puts format_text(tweet.text)
-          words = @user.listen(format_text(tweet.text),
-                               name: tweet.user.name,
-                               screen_name: tweet.user.screen_name)
-          response = @user.speak(name: tweet.user.name,
-                                 screen_name: tweet.user.screen_name)
+          response = @user.response(format_text(tweet.text),
+                                    member: tweet.user.screen_name)
           @client_rest.update("@" + tweet.user.screen_name + " " + response,
                               in_reply_to_status_id: tweet.id)
         else
           #timeline
           puts format_text(tweet.text)
-          words = @user.listen(format_text(tweet.text),
-                               name: tweet.user.name,
-                               screen_name: tweet.user.screen_name)
-          words.select{|w| Array[0, 1, 2, 8].include? w.category}.each do |w|
+          search_words = @user.listen(format_text(tweet.text),
+                                     member: tweet.user.screen_name)
+          search_words.each do |w|
             Thread.new do
-              @client_rest.search(w[:name] + " exclude:retweets",
+              @client_rest.search(w + " exclude:retweets",
                                   result_type: "popular",
                                   locale: "ja").first(10).each do |search|
-                puts format_text(search.text)
                 @user.listen(format_text(search.text))
               end
             end
           end
+          speak = @user.speak
+          @client_rest.update(speak) if speak 
         end
       end
     end
   end
-
+  
   private
   def format_text(text)
     text.gsub(Regexp.new("(\s|^)(@|http|#).*?(\s|$)"), "")
