@@ -65,7 +65,9 @@ module Dictionary
   
   def generate_markov(word_id)
     seq = Array[word_id]
-    seq.push Markov.where("prefix1 = ?", word_id).sample.prefix2
+    first_list = Markov.where("prefix1 = ?", word_id)
+    return Word.find_by(id: word_id).name if first_list.empty?
+    seq.push first_list.sample.prefix2
     CHAIN_MAX.times do
       suffix = Markov.where("(prefix1 = ?) and (prefix2 = ?)", seq.last(2)[0], seq.last(2)[1]).sample.suffix
       break if suffix == -1
