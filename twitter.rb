@@ -31,15 +31,15 @@ class TwitterManager
                                         member: tweet.user.screen_name)
             search_words.each do |w|
               Thread.new do
-              @client_rest.search(w + " exclude:retweets",
-                                  result_type: "popular",
-                                  locale: "ja").first(10).each do |search|
-                @user.listen(format_text(search.text))
-              end
+                @client_rest.search(w + " exclude:retweets",
+                                    result_type: "popular",
+                                    locale: "ja").first(10).each do |search|
+                  @user.listen(format_text(search.text))
+                end
               end
             end
-          speak = @user.speak
-          @client_rest.update(speak) if speak 
+            speak = @user.speak
+            @client_rest.update(speak) if speak
           end
         end
       end
@@ -51,7 +51,7 @@ class TwitterManager
   
   private
   def format_text(text)
-    text.gsub(Regexp.new("(\s|^)(@|http|#).*?(\s|$)x"), "")
+    text.gsub(Regexp.new("(\s|^)(@|http|#)[0-9a-zA-Z_]*"), "")
   end
   
 end
