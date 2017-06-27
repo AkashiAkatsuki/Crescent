@@ -14,7 +14,7 @@ class Core
   def listen(input, member: "")
     words = convert(input)
     learn_markov(words)
-    words.select! {|w| Array[0, 1, 2, 8].include? w.category}
+    words.select! {|w| Array[0, 8].include? w.category}
     if member != ""
       add_trend(words)
       add_member(member)
