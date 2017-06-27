@@ -1,6 +1,7 @@
 # coding: utf-8
 require 'bundler'
 require 'yaml'
+require 'uri'
 require './core.rb'
 Bundler.require
 
@@ -51,7 +52,7 @@ class TwitterManager
   
   private
   def format_text(text)
-    text.gsub(Regexp.new("(\s|^)(@|http|#)[0-9a-zA-Z_]*"), "")
+    text.gsub(Regexp.new("(\s|^)@[0-9a-zA-Z_]*"), "").gsub(URI.regexp, "").gsub(Regexp.new("#"), "")
   end
   
 end
