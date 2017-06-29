@@ -46,7 +46,9 @@ class TwitterManager
       end
     rescue => e 
       @client_rest.update("もう無理… " + e.message)
-      p e
+      p e.class
+      p e.message
+      p e.backtrace
     end
   end
   
