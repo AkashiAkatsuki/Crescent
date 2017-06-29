@@ -16,7 +16,7 @@ class Core
     learn_markov(words)
     words.select! {|w| Array[0, 8].include? w.category}
     if member != ""
-      add_trend(words)
+      add_trend(words.uniq)
       add_member(member)
     end
     words.collect{|w| w.name}
