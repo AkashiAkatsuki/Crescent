@@ -33,7 +33,9 @@ class Core
     @wait_count += 1
     if @wait_count > @members.uniq.size
       @wait_count = 0
-      generate_markov(@trends.max_by {|w| @trends.count(w)}.id)
+      keyword = @trends.max_by {|w| @trends.count(w)}
+      @trends.delete_at(@trends.index(keyword))
+      generate_markov(keyword.id)
     end
   end
   
