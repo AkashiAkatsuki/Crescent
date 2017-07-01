@@ -4,11 +4,8 @@ require 'yaml'
 require './word.rb'
 require './markov.rb'
 
-yml = YAML.load_file("config/database.yml")
-yml[:adapter] = "postgresql"
-ActiveRecord::Base.establish_connection(yml)
 
-module Dictionary
+class Dictionary
   CHAIN_MAX = 10
   CATEGORY_HASH = { "名詞" => 0,
                     "動詞" => 1,
@@ -21,11 +18,18 @@ module Dictionary
                     "感動詞" => 8,
                     "*" => 9
                   }
+
+  def initialize
+    @mecab = Natto::MeCab.new
+    yml = YAML.load_file("config/database.yml")
+    yml[:adapter] = "postgresql"
+    ActiveRecord::Base.establish_connection(yml)
+  end
   
   def convert(input)
     mecabs = Array.new #For kill MeCabError
     words = Array.new
-    Natto::MeCab.new.enum_parse(input).each do |n|
+    @mecab.enum_parse(input).each do |n|
       mecabs.push Hash[:name, n.surface,
                        :category, CATEGORY_HASH[n.feature.split(",").first]]
     end

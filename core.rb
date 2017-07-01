@@ -3,17 +3,17 @@ require 'yaml'
 require './dictionary.rb'  
 
 class Core
-  include Dictionary
   attr_reader :name
   
   def initialize
     profile = YAML.load_file("config/profile.yml")
     @name = profile['name']
+    @dic = Dictionary.new
   end
   
   def listen(input, member: "")
-    words = convert(input)
-    learn_markov(words)
+    words = @dic.convert(input)
+    @dic.learn_markov(words)
     words.select! {|w| Array[0, 8].include? w.category}
     if member != ""
       add_trend(words.uniq)
@@ -25,7 +25,7 @@ class Core
   def response(input, member: "")
     listen(input, member: member)
     p @trends
-    generate_markov(@trends.last.id)
+    @dic.generate_markov(@trends.last.id)
   end
   
   def speak
@@ -35,7 +35,7 @@ class Core
       @wait_count = 0
       keyword = @trends.max_by {|w| @trends.count(w)}
       @trends.delete_at(@trends.index(keyword))
-      generate_markov(keyword.id)
+      @dic.generate_markov(keyword.id)
     end
   end
   
