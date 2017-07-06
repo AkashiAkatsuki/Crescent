@@ -17,6 +17,9 @@ class TwitterManager
 
   def stream_start
     begin
+      @client_rest.followers.each do |user|
+        @client_rest.follow user.screen_name unless user.following?
+      end
       @client_stream.user do |tweet|
         if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
           if tweet.text.include?("@" + @screen_name)
