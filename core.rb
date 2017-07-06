@@ -25,7 +25,6 @@ class Core
   
   def response(input, member: "")
     listen(input, member: member)
-    p @trends
     @dic.generate_markov(@trends.last.id)
   end
   

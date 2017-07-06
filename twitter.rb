@@ -26,8 +26,7 @@ class TwitterManager
             @client_rest.update("@" + tweet.user.screen_name + " " + response,
                                 in_reply_to_status_id: tweet.id)
           else
-          #timeline
-            puts format_text(tweet.text)
+            #timeline
             search_words = @user.listen(format_text(tweet.text),
                                         member: tweet.user.screen_name)
             search_words.each do |w|
