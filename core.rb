@@ -4,6 +4,7 @@ require './dictionary.rb'
 
 class Core
   attr_reader :name
+  IGNORE_TREND = ["の", "ん", "ー"].freeze
   
   def initialize
     profile = YAML.load_file("config/profile.yml")
@@ -40,12 +41,13 @@ class Core
   end
   
   def add_trend(words)
-    if @trends.nil?
-      @trends = words
-    else
-      @trends.concat words
-    end
-    @trends.delete_at(0) if @trends.size > 100
+      words.delete_if {|w| IGNORE_TREND.include?(w.name)}
+      if @trends.nil?
+        @trends = words
+      else
+        @trends.concat words
+      end
+    @trends.delete_at(0) while @trends.size > 100
   end
   
   def add_member(member)
