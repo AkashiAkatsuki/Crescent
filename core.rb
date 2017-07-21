@@ -13,19 +13,14 @@ class Core
   end
   
   def listen(input, member: "")
-    words = @dic.convert(input)
-    @dic.learn_markov(words)
-    words.select! {|w| Array[0, 8].include? w.category}
-    if member != ""
-      add_trend(words.uniq)
-      add_member(member)
-    end
+    words = convert_words(input, member: member)
     words.collect{|w| w.name}
   end
   
   def response(input, member: "")
-    listen(input, member: member)
-    @dic.generate_markov(@trends.last.id)
+    words = convert_words(input, member: member)
+    return @dic.generate_markov(@trends.last.id) if words.empty?
+    @dic.generate_markov(words.sample.id)
   end
   
   def speak
@@ -38,6 +33,17 @@ class Core
       @dic.generate_markov(keyword.id)
     end
   end
+
+  def convert_words(input, member: "")
+    words = @dic.convert(input)
+    @dic.learn_markov(words)
+    words.select! {|w| Array[0, 8].include? w.category}
+    if member != ""
+      add_trend(words.uniq)
+      add_member(member)
+    end
+    return words
+  end
   
   def add_trend(words)
       words.delete_if {|w| IGNORE_TREND.include?(w.name)}
@@ -46,7 +52,7 @@ class Core
       else
         @trends.concat words
       end
-    @trends.delete_at(0) while @trends.size > 100
+      @trends.delete_at(0) while @trends.size > 100
   end
   
   def add_member(member)
