@@ -16,11 +16,10 @@ class TwitterManager
   end
 
   def stream_start
+    today = Time.now.mday
     begin
-      @client_rest.followers.each do |user|
-        @client_rest.follow user.screen_name unless user.following?
-      end
       @client_stream.user do |tweet|
+        followback unless today == Time.now.mday
         if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
           if tweet.text.include?("@" + @screen_name)
             #reply
@@ -51,6 +50,12 @@ class TwitterManager
       p e.class
       p e.message
       p e.backtrace
+    end
+  end
+
+  def followback
+    @client_rest.followers.each do |user|
+      @client_rest.follow user.screen_name unless user.following?
     end
   end
   
