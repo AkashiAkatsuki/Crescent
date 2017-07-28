@@ -14,12 +14,12 @@ class TwitterManager
     @client_rest = Twitter::REST::Client.new(yml)
     @screen_name = @client_rest.user.screen_name
   end
-
+  
   def stream_start
     today = Time.now.mday
     begin
       @client_stream.user do |tweet|
-        if today == Time.now.mday
+        if today != Time.now.mday
           followback
           today = Time.now.mday
         end
