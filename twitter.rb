@@ -19,7 +19,10 @@ class TwitterManager
     today = Time.now.mday
     begin
       @client_stream.user do |tweet|
-        followback unless today == Time.now.mday
+        if today == Time.now.mday
+          followback
+          today = Time.now.mday
+        end
         if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
           if tweet.text.include?("@" + @screen_name)
             #reply
