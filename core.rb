@@ -12,12 +12,14 @@ class Core
     @dic = Dictionary.new
   end
   
-  def listen(input, member: "")
+  def listen(input, member: "", screen_name: "")
+    @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input, member: member)
     words.collect{|w| w.name}
   end
   
-  def response(input, member: "")
+  def response(input, member: "", screen_name: "")
+    @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input, member: member)
     return @dic.generate_markov(@trends.last.id) if words.empty?
     @dic.generate_markov(words.sample.id)
@@ -33,7 +35,7 @@ class Core
       @dic.generate_markov(keyword.id)
     end
   end
-
+  
   def convert_words(input, member: "")
     words = @dic.convert(input)
     @dic.learn_markov(words)
@@ -42,7 +44,7 @@ class Core
       add_trend(words.uniq)
       add_member(member)
     end
-    return words
+    words
   end
   
   def add_trend(words)

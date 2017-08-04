@@ -14,19 +14,35 @@ namespace :db do
   task :create do
     puts "Please 'rake db:config'"  unless yml = YAML.load_file("config/database.yml")
     system("createdb -E UTF8 " + yml["dbname"])
+  end
+  
+  desc 'build table'
+  task :table do
+    puts "Please 'rake db:config'"  unless yml = YAML.load_file("config/database.yml")
     connection = PG::connect(yml)
-    connection.exec("
+    if connection.exec("select relname from pg_class where relname = 'words';").ntuples == 0
+      connection.exec("
 create table words(
 id serial not null,
 name text not null,
 category int not null,
 value int not null);")
-    connection.exec("
+    end
+    if connection.exec("select relname from pg_class where relname = 'markovs';").ntuples == 0
+      connection.exec("
 create table markovs(
 id serial not null,
 prefix1 int not null,
 prefix2 int not null,
-suffix int not null);")
+suffix int not null);")  
+    end
+    if connection.exec("select relname from pg_class where relname = 'friends';").ntuples == 0
+      connection.exec("
+create table friends(
+id serial not null,
+name text not null,
+screen_name text not null);")
+    end
     connection.finish
   end
   
@@ -72,3 +88,4 @@ task :study do
     end
   end
 end
+

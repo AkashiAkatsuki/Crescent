@@ -1,9 +1,17 @@
 # coding: utf-8
 require 'natto'
 require 'yaml'
-require './word.rb'
-require './markov.rb'
+require 'active_record'
 
+
+class Word < ActiveRecord::Base
+end
+
+class Markov < ActiveRecord::Base
+end
+
+class Friend < ActiveRecord::Base
+end
 
 class Dictionary
   CHAIN_MAX = 10
@@ -44,7 +52,7 @@ class Dictionary
     end
     words
   end
-
+  
   def learn_value(words)
     ave = 0
     words.select! {|w| Array[0, 1, 2, 8].include? w.category}
@@ -83,6 +91,15 @@ class Dictionary
       str << w.name unless w.nil?
     end
     str
+  end
+  
+  def add_friend(name, screen_name)
+    if(friend = Friend.find_by(screen_name: screen_name))
+      friend.name = name
+      friend.save
+    else
+      Friend.create(name: name, screen_name: screen_name)
+    end
   end
   
 end
