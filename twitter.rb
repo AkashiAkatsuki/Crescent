@@ -17,6 +17,7 @@ class TwitterManager
   
   def stream_start
     today = Time.now.mday
+    logger = Logger.new('Logfile')
     begin
       @client_stream.user do |tweet|
         if today != Time.now.mday
@@ -50,11 +51,9 @@ class TwitterManager
           end
         end
       end
-    rescue => e 
+    rescue => e
+      logger.error e
       @client_rest.update("もう無理… " + e.message)
-      p e.class
-      p e.message
-      p e.backtrace
     end
   end
 

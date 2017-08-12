@@ -95,8 +95,7 @@ class Dictionary
   
   def add_friend(name, screen_name)
     if(friend = Friend.find_by(screen_name: screen_name))
-      friend.name = name
-      friend.save
+      friend.update(name: name)
     else
       Friend.create(name: name, screen_name: screen_name)
     end
