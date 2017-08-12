@@ -2,3 +2,4 @@
 /config/twitter_auth.yml
 /config/database.yml
 Logfile
+.idea
