@@ -8,8 +8,11 @@ class Core
   
   def initialize
     profile = YAML.load_file("config/profile.yml")
-    @name = profile['name']
     @dic = Dictionary.new
+    @name = profile['name']
+    profile['values'].each do |word|
+      @dic.set_value(word['name'], word['value'])
+    end
   end
   
   def listen(input, member: "", screen_name: "")
@@ -39,6 +42,7 @@ class Core
   def convert_words(input, member: "")
     words = @dic.convert(input)
     @dic.learn_markov(words)
+    @dic.learn_value(words)
     words.select! {|w| Array[0, 8].include? w.category}
     if member != ""
       add_trend(words.uniq)

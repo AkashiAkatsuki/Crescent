@@ -5,28 +5,66 @@ require 'active_record'
 
 
 class Word < ActiveRecord::Base
+  self.primary_key = 'id'
 end
 
 class Markov < ActiveRecord::Base
+  self.primary_key = 'id'
+  CHAIN_MAX = 10
+  def self.learn(words)
+    words.each_cons(3) do |w1, w2, w3|
+      next if w1 == -1 || w2 == -1
+      find_or_create_by(
+        prefix1: w1.id,
+        prefix2: w2.id,
+        suffix:  w3.id)
+    end
+  end
+  
+  def self.generate(word_id)
+    seq = Array[word_id]
+    first_list = where("prefix1 = ?", word_id)
+    return Word.find_by(id: word_id).name if first_list.empty?
+    seq.push first_list.sample.prefix2
+    CHAIN_MAX.times do
+      suffix = Markov.where("(prefix1 = ?) and (prefix2 = ?)", seq.last(2)[0], seq.last(2)[1]).sample.suffix
+      break if suffix == -1
+      seq.push suffix
+    end
+    str = ""
+    seq.each do |id|
+      w = Word.find_by(id: id)
+      str << w.name unless w.nil?
+    end
+    str
+  end
 end
 
 class Friend < ActiveRecord::Base
+  self.primary_key = 'screen_name'
+  def self.add_friend(name, screen_name)
+    if friend = find_by(screen_name: screen_name)
+      friend.update(name: name)
+    else
+      create(name: name, screen_name: screen_name)
+    end
+  end
 end
 
 class Dictionary
-  CHAIN_MAX = 10
-  CATEGORY_HASH = { "名詞" => 0,
-                    "動詞" => 1,
-                    "形容詞" => 2,
-                    "副詞" => 3,
-                    "助詞" => 4,
-                    "接頭詞" => 5,
-                    "助動詞" => 6,
-                    "連体詞" => 7,
-                    "感動詞" => 8,
-                    "*" => 9
-                  }
-
+  CATEGORY_HASH = {
+    "名詞" => 0,
+    "動詞" => 1,
+    "形容詞" => 2,
+    "副詞" => 3,
+    "助詞" => 4,
+    "接頭詞" => 5,
+    "助動詞" => 6,
+    "連体詞" => 7,
+    "感動詞" => 8,
+    "*" => 9
+  }
+  
   def initialize
     @mecab = Natto::MeCab.new
     yml = YAML.load_file("config/database.yml")
@@ -57,48 +95,40 @@ class Dictionary
     ave = 0
     words.select! {|w| Array[0, 1, 2, 8].include? w.category}
     words.each do |w|
-      ave += find_by(id: w.id).value
+      ave += w.value
     end
     ave /= words.size
     words.each do |w|
-      # w.value *= ave
+      if w.value > ave
+        w.value -= (w.value - ave)/10
+      else
+        w.value += (ave - w.value)/10
+      end
+      w.save
+    end
+  end
+  
+  def set_value(input, value)
+    mecab = Hash.new
+    node = @mecab.enum_parse(input).first
+    mecab = Hash[:name, node.surface,
+                 :category, CATEGORY_HASH[node.feature.split(",").first]]
+    return if mecab[:category].nil?
+    unless Word.where("name = ?", mecab[:name]).update_all(value: value)
+      Word.create(name: mecab[:name], category: mecab[:category], value: value)
     end
   end
   
   def learn_markov(words)
-    words.each_cons(3) do |w1, w2, w3|
-      next if w1 == -1 || w2 == -1
-      Markov.find_or_create_by(
-        prefix1: w1.id,
-        prefix2: w2.id,
-        suffix:  w3.id)
-    end
+    Markov.learn(words)
   end
   
   def generate_markov(word_id)
-    seq = Array[word_id]
-    first_list = Markov.where("prefix1 = ?", word_id)
-    return Word.find_by(id: word_id).name if first_list.empty?
-    seq.push first_list.sample.prefix2
-    CHAIN_MAX.times do
-      suffix = Markov.where("(prefix1 = ?) and (prefix2 = ?)", seq.last(2)[0], seq.last(2)[1]).sample.suffix
-      break if suffix == -1
-      seq.push suffix
-    end
-    str = ""
-    seq.each do |id|
-      w = Word.find_by(id: id)
-      str << w.name unless w.nil?
-    end
-    str
+    Markov.generate(word_id)
   end
   
   def add_friend(name, screen_name)
-    if(friend = Friend.find_by(screen_name: screen_name))
-      friend.update(name: name)
-    else
-      Friend.create(name: name, screen_name: screen_name)
-    end
+    Friend.add_friend(name, screen_name)
   end
   
 end

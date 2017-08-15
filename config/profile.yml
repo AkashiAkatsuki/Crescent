@@ -1,9 +1,15 @@
 name: Kuretsuki
 
-good:
-  - 良い
-  - 好き
-
-bad:
-  - 悪い
-  - 嫌い
+values:
+  - name: 良い
+    value: 100
+  - name: いい
+    value: 100
+  - name: 好き
+    value: 100
+  - name: 悪い
+    value: -100
+  - name: 嫌い
+    value: -100
+  - name: 駄目
+    value: -100
