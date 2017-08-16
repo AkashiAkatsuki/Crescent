@@ -26,7 +26,7 @@ create table words(
 id serial not null,
 name text not null,
 category int not null,
-value int not null);")
+value decimal not null);")
     end
     if connection.exec("select relname from pg_class where relname = 'markovs';").ntuples == 0
       connection.exec("

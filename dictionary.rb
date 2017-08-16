@@ -100,9 +100,9 @@ class Dictionary
     ave /= words.size
     words.each do |w|
       if w.value > ave
-        w.value -= (w.value - ave)/10
+        w.value -= (w.value - ave)/10.to_f
       else
-        w.value += (ave - w.value)/10
+        w.value += (ave - w.value)/10.to_f
       end
       w.save
     end
