@@ -10,7 +10,7 @@ name = "Default"
 screen_name = ""
 
 while true
-  print 'MENU (1)Talk (2)Speak (3)Name:'
+  print 'MENU (1)Talk (2)Speak (3)Name (4)Pry:'
   case gets.to_i
   when 1 then
     while true
@@ -28,6 +28,8 @@ while true
     name = gets.chomp
     print "ScreenName: "
     screen_name = gets.chomp
+  when 4 then
+    binding.pry
   else
     break
   end  
