@@ -52,6 +52,7 @@ class TwitterManager
         end
       end
     rescue => e
+      logger.info tweet if tweet.defined?
       logger.error e
       @client_rest.update("もう無理… " + e.message)
     end
