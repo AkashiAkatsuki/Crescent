@@ -7,9 +7,17 @@ values:
     value: 100
   - name: 好き
     value: 100
+  - name: すき
+    value: 100
   - name: 悪い
+    value: -100
+  - name: わるい
     value: -100
   - name: 嫌い
     value: -100
+  - name: きらい
+    value: -100
   - name: 駄目
+    value: -100
+  - name: だめ
     value: -100
