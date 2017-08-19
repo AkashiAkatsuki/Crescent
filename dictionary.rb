@@ -95,6 +95,7 @@ class Dictionary
   end
   
   def learn_value(words)
+    return if words.empty?
     ave = 0
     words.select! {|w| Array[0, 1, 2, 8].include? w.category}
     words.each do |w|
