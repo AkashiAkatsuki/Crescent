@@ -30,7 +30,6 @@ class Markov < ActiveRecord::Base
     CHAIN_MAX.times do
       choice = Markov.where("(prefix1 = ?) and (prefix2 = ?)", seq.last(2)[0], seq.last(2)[1]).sample.suffix
       break if choice == -1
-      p Word.find(choice)
       redo if [true, false].sample && (Word.find(choice).value - keyword.value).abs > 1
       suffix = choice
       seq.push suffix
