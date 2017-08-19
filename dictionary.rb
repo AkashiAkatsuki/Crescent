@@ -36,7 +36,7 @@ class Markov < ActiveRecord::Base
     end
     str = ""
     seq.each do |id|
-      w = Word.find(id)
+      w = Word.find(id) unless id == -1
       str << w.name unless w.nil?
     end
     str
