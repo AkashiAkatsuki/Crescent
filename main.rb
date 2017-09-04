@@ -3,19 +3,26 @@ require 'bundler'
 Bundler.require
 require 'active_record'
 require './core.rb'
+require './twitter.rb'
 
 core = Core.new
 puts core.name + " got up."
 name = "Default"
 screen_name = ""
 
+if /t/ === ARGV[0]
+  Thread.new do
+    TwitterManager.new(core).stream_start
+  end
+end
+
 while true
   print 'MENU (1)Talk (2)Speak (3)Name (4)Pry:'
-  case gets.to_i
+  case STDIN.gets.to_i
   when 1 then
     while true
       print '> '
-      input = gets
+      input = STDIN.gets
       input.chomp!
       break if input == ''
       puts core.name + "> " + core.response(input, member: name, screen_name: screen_name)
@@ -27,10 +34,10 @@ while true
     print "Name: "
     name = gets.chomp
     print "ScreenName: "
-    screen_name = gets.chomp
+    screen_name = STDIN.gets.chomp
   when 4 then
     binding.pry
   else
     break
-  end  
+  end
 end

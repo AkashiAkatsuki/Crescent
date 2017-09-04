@@ -7,8 +7,8 @@ Bundler.require
 
 class TwitterManager
 
-  def initialize(user)
-    @user = user
+  def initialize(core)
+    @core = core
     yml = YAML.load_file("config/twitter_auth.yml")
     @client_stream = Twitter::Streaming::Client.new(yml)
     @client_rest = Twitter::REST::Client.new(yml)
@@ -27,14 +27,14 @@ class TwitterManager
         if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
           if tweet.text.include?("@" + @screen_name)
             #reply
-            response = @user.response(format_text(tweet.text),
+            response = @core.response(format_text(tweet.text),
                                       member: tweet.user.name,
                                       screen_name: tweet.user.screen_name)
             @client_rest.update("@" + tweet.user.screen_name + " " + response,
                                 in_reply_to_status_id: tweet.id)
           else
             #timeline
-            search_words = @user.listen(format_text(tweet.text),
+            search_words = @core.listen(format_text(tweet.text),
                                         member: tweet.user.name,
                                         screen_name: tweet.user.screen_name)
             search_words.each do |w|
@@ -42,11 +42,11 @@ class TwitterManager
                 @client_rest.search(w + " exclude:retweets",
                                     result_type: "popular",
                                     locale: "ja").first(10).each do |search|
-                  @user.listen(format_text(search.text))
+                  @core.listen(format_text(search.text))
                 end
               end
             end
-            speak = @user.speak
+            speak = @core.speak
             @client_rest.update(speak) if speak
           end
         end
@@ -70,7 +70,3 @@ class TwitterManager
   end
   
 end
-
-core = Core.new
-puts core.name + " got up."
-TwitterManager.new(core).stream_start
