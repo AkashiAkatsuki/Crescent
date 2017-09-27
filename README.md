@@ -17,5 +17,5 @@ Ruby(rbenv)、PostgreSQLを入れた後bundle install。
 たぶんこんな感じだったと思うけどそのうち詳しく書く
 
 ## Using
-    ruby main.rb -t // -tを付けるとTwitterも起動
+    ruby main.rb t // tはTwitter起動
 たまに落ちるのでシェルのwhileで起こしてる
