@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+</html>
+
+<body>
+  <h1>Crescent</h1>
+  
+  <% @texts.each do |t| %>
+  <%= t %><br>
+  <% end %>
+  
+  <form action="send" method="POST">
+    <label>Text: </label><input type="text" name="text" value="">
+    <input type="submit" value="送信">
+  </form>
+</body>
