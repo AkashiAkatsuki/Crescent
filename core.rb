@@ -30,8 +30,9 @@ class Core
   def response(input, member: "", screen_name: "")
     @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input)
-    return @dic.generate_markov(@trends.last.id) if words.empty?
-    @dic.generate_markov(words.sample.id)
+    return @dic.generate_markov(words.sample.id) unless words.empty?
+    return @dic.generate_markov(@trends.last.id) unless @trends.nil?
+    'Zzz'
   end
   
   def speak
