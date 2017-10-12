@@ -38,10 +38,12 @@ class TwitterManager
                                         member: tweet.user.name,
                                         screen_name: tweet.user.screen_name)
             search_words.each do |w|
-              @client_rest.search(w + " exclude:retweets",
-                                  result_type: "popular",
-                                  locale: "ja").first(10).each do |search|
-                @core.listen(format_text(search.text))
+              Thread.new do
+                @client_rest.search(w + " exclude:retweets",
+                                    result_type: "popular",
+                                    locale: "ja").first(10).each do |search|
+                  @core.listen(format_text(search.text))
+                end
               end
             end
             speak = @core.speak
