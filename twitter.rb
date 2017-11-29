@@ -39,7 +39,7 @@ class TwitterManager
                                         screen_name: tweet.user.screen_name)
             search_words.each do |w|
               Thread.new do
-                @client_rest.search(w + " exclude:retweets",
+                @client_rest.search(w + " exclude:retweets lang:ja",
                                     result_type: "popular",
                                     locale: "ja").first(10).each do |search|
                   @core.listen(format_text(search.text))
