@@ -13,6 +13,7 @@ class TwitterManager
     @client_stream = Twitter::Streaming::Client.new(yml)
     @client_rest = Twitter::REST::Client.new(yml)
     @screen_name = @client_rest.user.screen_name
+    @config = YAML.load_file("config/twitter.yml")
   end
   
   def stream_start
@@ -27,6 +28,7 @@ class TwitterManager
         if (tweet.is_a?(Twitter::Tweet) && !tweet.retweeted_status && tweet.user.screen_name != @screen_name)
           if tweet.text.include?("@" + @screen_name)
             #reply
+            next if @config['bot_friends'].include?(tweet.user.screen_name) && @config['bot_ignore'] > Random.new.rand(1.0)
             response = @core.response(format_text(tweet.text),
                                       member: tweet.user.name,
                                       screen_name: tweet.user.screen_name)
@@ -41,7 +43,8 @@ class TwitterManager
               Thread.new do
                 @client_rest.search(w + " exclude:retweets lang:ja",
                                     result_type: "popular",
-                                    locale: "ja").first(10).each do |search|
+                                    locale: "ja",
+                                    count: @config['search_amount']).each do |search|
                   @core.listen(format_text(search.text))
                 end
               end
