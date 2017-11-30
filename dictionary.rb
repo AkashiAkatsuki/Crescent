@@ -37,8 +37,10 @@ class Markov < ActiveRecord::Base
     str = ""
     seq.each do |id|
       w = Word.find(id) unless id == -1
-      str << w.name unless w.nil?
-      str << ' ' if (w.name =~ /^[A-Za-z]+$/) == 0
+      unless w.nil?
+        str << w.name
+        str << ' ' if (w.name =~ /^[A-Za-z]+$/) == 0
+      end
     end
     str
   end
