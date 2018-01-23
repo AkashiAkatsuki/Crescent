@@ -29,6 +29,7 @@ class TwitterManager
           if tweet.text.include?("@" + @screen_name)
             #reply
             next if @config['bot_friends'].include?(tweet.user.screen_name) && @config['bot_ignore'] > Random.new.rand(1.0)
+            search_new_words
             response = @core.response(format_text(tweet.text),
                                       member: tweet.user.name,
                                       screen_name: tweet.user.screen_name)
@@ -36,19 +37,10 @@ class TwitterManager
                                 in_reply_to_status_id: tweet.id)
           else
             #timeline
-            search_words = @core.listen(format_text(tweet.text),
-                                        member: tweet.user.name,
-                                        screen_name: tweet.user.screen_name)
-            search_words.each do |w|
-              Thread.new do
-                @client_rest.search(w + " exclude:retweets lang:ja",
-                                    result_type: "popular",
-                                    locale: "ja",
-                                    count: @config['search_amount']).each do |search|
-                  @core.listen(format_text(search.text))
-                end
-              end
-            end
+            @core.listen(format_text(tweet.text),
+                         member: tweet.user.name,
+                         screen_name: tweet.user.screen_name)
+            search_new_words
             speak = @core.speak
             @client_rest.update(speak) if speak
           end
@@ -60,7 +52,7 @@ class TwitterManager
       @client_rest.update("もう無理… " + e.message)
     end
   end
-
+  
   def followback
     @client_rest.followers.each do |user|
       @client_rest.follow user.screen_name unless user.following?
@@ -70,6 +62,21 @@ class TwitterManager
   private
   def format_text(text)
     text.gsub(Regexp.new("(\s|^)@[0-9a-zA-Z_]*"), "").gsub(URI.regexp, "").gsub(Regexp.new("#"), "")
+  end
+
+  def search_new_words
+    search_words = @core.new_words
+    search_words.each do |w|
+      Thread.new do
+        @client_rest.search(w + " exclude:retweets lang:ja",
+                            result_type: "popular",
+                            locale: "ja",
+                            count: @config['search_amount']).each do |search|
+          @core.listen(format_text(search.text))
+        end
+      end
+    end
+    @core.clear_new_words
   end
   
 end

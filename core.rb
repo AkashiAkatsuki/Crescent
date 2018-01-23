@@ -16,17 +16,15 @@ class Core
   end
   
   def listen(input, member: "", screen_name: "")
-    @dic.add_friend(member, screen_name)
     words = convert_words(input)
-    add_trend(words.uniq)
-    add_member(member)
-    words.collect{|w| w.name}
+    if screen_name != ""
+      @dic.add_friend(member, screen_name)
+      add_trend(words.uniq)
+      add_member(member)
+      words.collect{|w| w.name}
+    end
   end
 
-  def listen_from_search(input)
-    convert_words(input)
-  end
-  
   def response(input, member: "", screen_name: "")
     @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input)
@@ -44,6 +42,14 @@ class Core
       @trends.delete_at(@trends.index(keyword))
       @dic.generate_markov(keyword.id)
     end
+  end
+  
+  def new_words
+    @dic.new_words
+  end
+  
+  def clear_new_words
+    @dic.new_words = Array.new
   end
   
   def convert_words(input)
@@ -68,5 +74,5 @@ class Core
     @members.push member
     @members.delete_at(0) if @members.size > 10
   end
-  
+
 end

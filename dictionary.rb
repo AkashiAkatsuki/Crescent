@@ -58,6 +58,8 @@ class Friend < ActiveRecord::Base
 end
 
 class Dictionary
+  attr_accessor :new_words
+       
   CATEGORY_HASH = {
     "名詞" => 0,
     "動詞" => 1,
@@ -73,6 +75,7 @@ class Dictionary
   
   def initialize
     @mecab = Natto::MeCab.new
+    @new_words = Array.new
     yml = YAML.load_file("config/database.yml")
     yml[:adapter] = "postgresql"
     ActiveRecord::Base.establish_connection(yml)
@@ -89,7 +92,10 @@ class Dictionary
       if m[:category].nil?
         data = Word.new(id: -1, name: "EOS", category: -1, value: 0)
       else
-        Word.find_or_create_by(name: m[:name], category: m[:category]){|d| d.value = 0}
+        word = Word.find_or_create_by(name: m[:name], category: m[:category]) do |d|
+          d.value = 0
+          @new_words.push d.name
+        end
         data = Word.find_by(name: m[:name], category:  m[:category])
       end
       words.push data
