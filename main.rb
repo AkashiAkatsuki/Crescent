@@ -4,7 +4,7 @@ Bundler.require
 require 'active_record'
 require './core.rb'
 require './twitter.rb'
-require './webpage.rb'
+require './app.rb'
 
 core = Core.new
 puts core.name + " got up."
