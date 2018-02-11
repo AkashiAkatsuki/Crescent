@@ -1,23 +1,11 @@
-require 'sinatra/base'
+require 'sinatra'
+require './core.rb'
+require 'json'
 
-class WebPage < Sinatra::Base
+before do
+end
 
-  def self.init(core)
-    @@array = Array.new
-    @@core = core
-  end
-
-  get '/' do
-    @name = @@core.name
-    @texts = @@array
-    erb :index
-  end
-
-  post '/send' do
-    @@array.push "> " + params['text']
-    @@array.push @@core.name + "> " + @@core.response(params['text'])
-    @texts = @@array
-    erb :index
-  end
-
+post '/api/talk' do
+  content_type 'application/json'
+  return { text: params[:text] }.to_json
 end
