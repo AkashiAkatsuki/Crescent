@@ -8,6 +8,11 @@ before do
   @core = Core.new
 end
 
+get '/api/name' do
+  content_type 'application/json'
+  { name: @core.name }.to_json
+end
+
 post '/api/talk' do
   content_type 'application/json'
   return { text: '無理...' }.to_json unless params.key? :text
