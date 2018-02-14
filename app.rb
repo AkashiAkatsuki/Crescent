@@ -2,7 +2,6 @@
 require 'sinatra'
 require './core.rb'
 require 'json'
-require 'pry'
 
 before do
   @core = Core.new
@@ -11,6 +10,11 @@ end
 get '/api/name' do
   content_type 'application/json'
   { name: @core.name }.to_json
+end
+
+get '/api/word/:id' do
+  content_type 'application/json'
+  Word.find(params[:id]).to_json
 end
 
 post '/api/talk' do
