@@ -17,11 +17,12 @@ class API < Sinatra::Base
     content_type 'application/json'
     Word.find(params[:id]).to_json
   end
-
+  
   post '/talk' do
     content_type 'application/json'
     return { text: '無理...' }.to_json unless params.key? :text
-    return { text: '誰？'}.to_json unless params.key?(:name) && params.key?(:screen_name)
+    params[:name] ||= ""
+    params[:screen_name] ||= ""
     { text: @core.response(params[:text], member: params[:name], screen_name: params[:screen_name]) }.to_json
   end
 end
