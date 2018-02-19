@@ -12,7 +12,7 @@
       <tr>
 	<td><%= word.id %></td>
 	<td><%= word.name %></td>
-	<td><%= word.category %></td>
+	<td><%= @category_hash[word.category] %></td>
 	<td><%= word.value %></td>
       </tr>
     <% end %>

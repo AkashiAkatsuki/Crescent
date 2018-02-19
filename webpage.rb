@@ -14,6 +14,7 @@ class WebPage < Sinatra::Base
 
   get '/words/:page' do
     @words = Word.page(params[:page]).per(100)
+    @category_hash = Dictionary::CATEGORY_HASH.invert
     erb :words
   end
 end
