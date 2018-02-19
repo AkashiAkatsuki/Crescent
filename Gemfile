@@ -11,5 +11,6 @@ gem 'kaminari-activerecord'
 
 group :development, :test do
   gem 'rspec'
+  gem 'rspec-json_matcher'
   gem 'rack-test'
 end
