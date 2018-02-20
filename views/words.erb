@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+</html>
+
+<body>
+  <h1>Crescent</h1>
+  <table>
+    <tr><td>id</td><td>name</td><td>category</td><td>value</td></tr>
+    <% @words.each do |word| %>
+      <tr>
+	<td><%= word.id %></td>
+	<td><%= word.name %></td>
+	<td><%= @category_hash[word.category] %></td>
+	<td><%= word.value %></td>
+      </tr>
+    <% end %>
+  </table>
+</body>

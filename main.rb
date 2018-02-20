@@ -4,7 +4,6 @@ Bundler.require
 require 'active_record'
 require './core.rb'
 require './twitter.rb'
-require './webpage.rb'
 
 core = Core.new
 puts core.name + " got up."
@@ -14,9 +13,6 @@ screen_name = ""
 if /t/ === ARGV[0]
   TwitterManager.new(core).stream_start
   exit
-elsif /w/ === ARGV[0]
-  WebPage.init core
-  WebPage.run! host: 'localhost', port: 4567
 else
   while true
     print 'MENU (1)Talk (2)Speak (3)Name (4)Pry:'
