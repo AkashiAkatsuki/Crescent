@@ -3,6 +3,9 @@ require 'natto'
 require 'yaml'
 require 'active_record'
 
+yml = YAML.load_file("config/database.yml")
+yml[:adapter] = "postgresql"
+ActiveRecord::Base.establish_connection(yml)
 
 class Word < ActiveRecord::Base
   self.primary_key = 'id'
@@ -20,7 +23,7 @@ class Markov < ActiveRecord::Base
         suffix:  w3.id)
     end
   end
-  
+
   def self.generate(word_id)
     keyword = Word.find_by(id: word_id)
     seq = Array[word_id]
@@ -59,7 +62,7 @@ end
 
 class Dictionary
   attr_accessor :new_words
-       
+
   CATEGORY_HASH = {
     "名詞" => 0,
     "動詞" => 1,
@@ -72,15 +75,12 @@ class Dictionary
     "感動詞" => 8,
     "*" => 9
   }
-  
+
   def initialize
     @mecab = Natto::MeCab.new
     @new_words = Array.new
-    yml = YAML.load_file("config/database.yml")
-    yml[:adapter] = "postgresql"
-    ActiveRecord::Base.establish_connection(yml)
   end
-  
+
   def convert(input)
     mecabs = Array.new #For kill MeCabError
     words = Array.new
@@ -102,7 +102,7 @@ class Dictionary
     end
     words
   end
-  
+
   def learn_value(words)
     words.select! {|w| Array[0, 1, 2, 8].include? w.category}
     return if words.empty?
@@ -120,7 +120,7 @@ class Dictionary
       w.save
     end
   end
-  
+
   def set_value(input, value)
     mecab = Hash.new
     node = @mecab.enum_parse(input).first
@@ -131,17 +131,17 @@ class Dictionary
       Word.create(name: mecab[:name], category: mecab[:category], value: value)
     end
   end
-  
+
   def learn_markov(words)
     Markov.learn(words)
   end
-  
+
   def generate_markov(word_id)
     Markov.generate(word_id)
   end
-  
+
   def add_friend(name, screen_name)
     Friend.add_friend(name, screen_name)
   end
-  
+
 end
