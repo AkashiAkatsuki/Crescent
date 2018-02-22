@@ -1,6 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    actionview (5.1.0)
+      activesupport (= 5.1.0)
+      builder (~> 3.1)
+      erubi (~> 1.4)
+      rails-dom-testing (~> 2.0)
+      rails-html-sanitizer (~> 1.0, >= 1.0.3)
     activemodel (5.1.0)
       activesupport (= 5.1.0)
     activerecord (5.1.0)
@@ -15,13 +21,18 @@ GEM
     addressable (2.5.1)
       public_suffix (~> 2.0, >= 2.0.2)
     arel (8.0.0)
+    awesome_print (1.8.0)
     backports (3.8.0)
     buftok (0.2.0)
+    builder (3.2.3)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
+    crass (1.0.3)
+    diff-lcs (1.2.4)
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
     equalizer (0.0.11)
+    erubi (1.7.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.18)
@@ -35,9 +46,24 @@ GEM
     http-form_data (1.0.1)
     http_parser.rb (0.6.0)
     i18n (0.8.1)
+    json (2.1.0)
+    kaminari-activerecord (1.1.1)
+      activerecord
+      kaminari-core (= 1.1.1)
+    kaminari-core (1.1.1)
+    kaminari-sinatra (1.0.1)
+      actionview
+      kaminari-core (~> 1.0)
+      padrino-helpers
+      sinatra
+    kgio (2.11.2)
+    loofah (2.2.0)
+      crass (~> 1.0.2)
+      nokogiri (>= 1.5.9)
     memoizable (0.4.2)
       thread_safe (~> 0.3, >= 0.3.1)
     method_source (0.8.2)
+    mini_portile2 (2.3.0)
     minitest (5.10.1)
     multi_json (1.12.2)
     multipart-post (2.0.0)
@@ -45,6 +71,13 @@ GEM
     natto (1.1.1)
       ffi (>= 1.9.0)
     naught (1.1.0)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
+    padrino-helpers (0.14.2)
+      i18n (~> 0.6, >= 0.6.7)
+      padrino-support (= 0.14.2)
+      tilt (>= 1.4.1, < 3)
+    padrino-support (0.14.2)
     pg (0.20.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -54,6 +87,25 @@ GEM
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rails-dom-testing (2.0.3)
+      activesupport (>= 4.2.0)
+      nokogiri (>= 1.6)
+    rails-html-sanitizer (1.0.3)
+      loofah (~> 2.0)
+    raindrops (0.19.0)
+    rspec (2.14.1)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
+    rspec-core (2.14.4)
+    rspec-expectations (2.14.0)
+      diff-lcs (>= 1.1.3, < 2.0)
+    rspec-json_matcher (0.1.6)
+      awesome_print
+      json
+    rspec-mocks (2.14.1)
     simple_oauth (0.3.1)
     sinatra (2.0.0)
       mustermann (~> 1.0)
@@ -85,18 +137,27 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.4)
+    unicorn (5.4.0)
+      kgio (~> 2.6)
+      raindrops (~> 0.7)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   activerecord
+  kaminari-activerecord
+  kaminari-sinatra
   natto
   pg
   pry
+  rack-test
+  rspec
+  rspec-json_matcher
   sinatra
   sinatra-contrib
   twitter
+  unicorn
 
 BUNDLED WITH
    1.14.6

@@ -1,6 +1,8 @@
 *~
 /config/twitter_auth.yml
 /config/database.yml
+/config/unicorn.rb
 Logfile
 .idea
 .gitignore
+Gemfile.lock
