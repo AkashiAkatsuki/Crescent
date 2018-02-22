@@ -9,6 +9,7 @@ gem 'pg'
 gem 'activerecord'
 gem 'pry'
 gem 'kaminari-activerecord'
+gem 'kaminari-sinatra'
 
 group :development, :test do
   gem 'rspec'
