@@ -7,10 +7,6 @@ require 'pry'
 class WebPage < Sinatra::Base
   register Kaminari::Helpers::SinatraHelpers
 
-  before do
-    @dic = Dictionary.new
-  end
-
   get '/' do
     erb :index
   end
