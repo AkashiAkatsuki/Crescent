@@ -6,6 +6,12 @@
 
 <body>
   <h1>Crescent</h1>
+  <p>
+    <form action="/words" method="get">
+      <input type="text" name="search">
+      <input type="submit">
+    </form>
+  </p>
   <table>
     <tr><td>id</td><td>name</td><td>category</td><td>value</td></tr>
     <% @words.each do |word| %>
