@@ -10,6 +10,7 @@ class Core
     profile = YAML.load_file("config/profile.yml")
     @dic = Dictionary.new
     @name = profile['name']
+    @learning_rate = profile['learning_rate']
     profile['values'].each do |word|
       @dic.set_value(word['name'], word['value'])
     end
@@ -55,7 +56,7 @@ class Core
   def convert_words(input)
     words = @dic.convert(input)
     @dic.learn_markov(words)
-    @dic.learn_value(words)
+    @dic.learn_value(words, @learning_rate)
     words.select {|w| Array[0, 8].include? w.category}
   end
   

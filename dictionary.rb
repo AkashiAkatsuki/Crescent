@@ -102,20 +102,16 @@ class Dictionary
     end
     words
   end
-
-  def learn_value(words)
+ 
+  def learn_value(words, learning_rate)
     words.select! {|w| Array[0, 1, 2, 8].include? w.category}
     return if words.empty?
-    ave = 0
-    words.each do |w|
-      ave += w.value
-    end
-    ave /= words.size
+    ave = words.map{ |v| v.value }.inject(:+)/words.size.to_f
     words.each do |w|
       if w.value > ave
-        w.value -= (w.value - ave)/10.to_f
+        w.value -= (w.value - ave) * learning_rate
       else
-        w.value += (ave - w.value)/10.to_f
+        w.value += (ave - w.value) * learning_rate
       end
       w.save
     end
