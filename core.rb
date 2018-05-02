@@ -14,7 +14,7 @@ class Core
       @dic.set_value(word['name'], word['value'])
     end
   end
-  
+
   def listen(input, member: "", screen_name: "")
     words = convert_words(input)
     if screen_name != ""
@@ -60,13 +60,13 @@ class Core
   end
   
   def add_trend(words)
-      words.delete_if {|w| IGNORE_TREND.include?(w.name)}
-      if @trends.nil?
-        @trends = words
-      else
-        @trends.concat words
-      end
-      @trends.delete_at(0) while @trends.size > 100
+    words.delete_if {|w| IGNORE_TREND.include?(w.name)}
+    if @trends.nil?
+      @trends = words
+    else
+      @trends.concat words
+    end
+    @trends.delete_at(0) while @trends.size > 100
   end
   
   def add_member(member)
