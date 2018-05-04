@@ -2,6 +2,7 @@
 require 'natto'
 require 'yaml'
 require 'active_record'
+require 'weighted_randomizer'
 
 yml = YAML.load_file("config/database.yml")
 yml[:adapter] = "postgresql"
@@ -27,18 +28,19 @@ class Markov < ActiveRecord::Base
   def self.generate(word_id, value: 0.5)
     keyword = Word.find_by(id: word_id)
     seq = Array[keyword]
-    first_list = where("prefix1 = ?", word_id)
-    return keyword.name if first_list.empty?
-    first_choice_id = first_list.sample.prefix2
-    return keyword.name if first_choice_id == -1
-    seq.push Word.find(first_choice_id)
+    first_markovs = where("prefix1 = ?", word_id)
+    first_ids = first_markovs.map { |m| m.prefix2 }
+    first_word = choice_word(first_ids, value)
+    return keyword.name if first_word.nil?
+    seq.push first_word
     CHAIN_MAX.times do
-      suggestions = Markov.where("(prefix1 = ?) and (prefix2 = ?)",
-                                 seq.last(2)[0].id,
-                                 seq.last(2)[1].id)
-      choice = suggestions.sample
-      break if choice.suffix == -1
-      seq.push Word.find(choice.suffix)
+      suggest_markovs = Markov.where("(prefix1 = ?) and (prefix2 = ?)",
+                                     seq.last(2)[0].id,
+                                     seq.last(2)[1].id)
+      suggest_ids = suggest_markovs.map{ |m| m.suffix }
+      choice = choice_word(suggest_ids, value)
+      break if choice.nil?
+      seq.push choice
     end
     str = ""
     seq.each do |w|
@@ -48,6 +50,18 @@ class Markov < ActiveRecord::Base
       end
     end
     str
+  end
+
+  private
+  def self.choice_word(word_ids, value)
+    return -1 if word_ids.empty?
+    table = Hash.new
+    word_ids.each do |wi|
+      next if wi == -1
+      w = Word.find(wi)
+      table[w] = 1/(wi - w.value).abs
+    end
+    WeightedRandomizer.new(table).sample
   end
 end
 

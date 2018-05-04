@@ -10,6 +10,7 @@ gem 'activerecord'
 gem 'pry'
 gem 'kaminari-activerecord'
 gem 'kaminari-sinatra'
+gem 'weighted_randomizer'
 
 group :development, :test do
   gem 'rspec'
