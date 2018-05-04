@@ -24,22 +24,24 @@ class Markov < ActiveRecord::Base
     end
   end
 
-  def self.generate(word_id)
+  def self.generate(word_id, value: 0.5)
     keyword = Word.find_by(id: word_id)
-    seq = Array[word_id]
+    seq = Array[keyword]
     first_list = where("prefix1 = ?", word_id)
     return keyword.name if first_list.empty?
-    seq.push first_list.sample.prefix2
+    first_choice_id = first_list.sample.prefix2
+    return keyword.name if first_choice_id == -1
+    seq.push Word.find(first_choice_id)
     CHAIN_MAX.times do
-      choice = Markov.where("(prefix1 = ?) and (prefix2 = ?)", seq.last(2)[0], seq.last(2)[1]).sample.suffix
-      break if choice == -1
-      redo if [true, false].sample && (Word.find(choice).value - keyword.value).abs > 1
-      suffix = choice
-      seq.push suffix
+      suggestions = Markov.where("(prefix1 = ?) and (prefix2 = ?)",
+                                 seq.last(2)[0].id,
+                                 seq.last(2)[1].id)
+      choice = suggestions.sample
+      break if choice.suffix == -1
+      seq.push Word.find(choice.suffix)
     end
     str = ""
-    seq.each do |id|
-      w = Word.find(id) unless id == -1
+    seq.each do |w|
       unless w.nil?
         str << w.name
         str << ' ' if (w.name =~ /^[A-Za-z]+$/) == 0
