@@ -137,7 +137,9 @@ class Dictionary
 
   def average_of_value(words)
     selected_words = select_words(words)
-    selected_words.map{ |v| v.value }.inject(:+)/selected_words.size.to_f
+    values = selected_words.map{ |v| v.value }
+    return 0 if values.empty?
+    values.inject(:+)/selected_words.size.to_f
   end
 
   def set_value(input, value)
