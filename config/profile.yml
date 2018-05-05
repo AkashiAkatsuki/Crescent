@@ -1,5 +1,5 @@
 name: Kuretsuki
-learning_rate: 0.1
+learning_rate: 0.3
 
 values:
   - name: 良い
@@ -9,6 +9,18 @@ values:
   - name: 好き
     value: 1
   - name: すき
+    value: 1
+  - name: 最高
+    value: 1
+  - name: 最強
+    value: 1
+  - name: つよい
+    value: 1
+  - name: 強い
+    value: 1
+  - name: かわいい
+    value: 1
+  - name: 可愛い
     value: 1
   - name: 悪い
     value: 0
@@ -21,4 +33,14 @@ values:
   - name: 駄目
     value: 0
   - name: だめ
+    value: 0
+  - name: ダメ
+    value: 0
+  - name: 辛い
+    value: 0
+  - name: つらい
+    value: 0
+  - name: クソ
+    value: 0
+  - name: 最悪
     value: 0
