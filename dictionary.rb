@@ -2,6 +2,7 @@
 require 'natto'
 require 'yaml'
 require 'active_record'
+require 'weighted_randomizer'
 
 yml = YAML.load_file("config/database.yml")
 yml[:adapter] = "postgresql"
@@ -24,28 +25,46 @@ class Markov < ActiveRecord::Base
     end
   end
 
-  def self.generate(word_id)
+  def self.generate(word_id, value: 0.5)
     keyword = Word.find_by(id: word_id)
-    seq = Array[word_id]
-    first_list = where("prefix1 = ?", word_id)
-    return keyword.name if first_list.empty?
-    seq.push first_list.sample.prefix2
+    seq = Array[keyword]
+    first_markovs = where("prefix1 = ?", word_id)
+    first_ids = first_markovs.map { |m| m.prefix2 }
+    first_word = choice_word(first_ids, value)
+    return keyword.name if first_word.nil?
+    seq.push first_word
     CHAIN_MAX.times do
-      choice = Markov.where("(prefix1 = ?) and (prefix2 = ?)", seq.last(2)[0], seq.last(2)[1]).sample.suffix
-      break if choice == -1
-      redo if [true, false].sample && (Word.find(choice).value - keyword.value).abs > 1
-      suffix = choice
-      seq.push suffix
+      suggest_markovs = Markov.where("(prefix1 = ?) and (prefix2 = ?)",
+                                     seq.last(2)[0].id,
+                                     seq.last(2)[1].id)
+      suggest_ids = suggest_markovs.map{ |m| m.suffix }
+      choice = choice_word(suggest_ids, value)
+      break if choice.nil?
+      seq.push choice
     end
     str = ""
-    seq.each do |id|
-      w = Word.find(id) unless id == -1
+    seq.each do |w|
       unless w.nil?
         str << w.name
         str << ' ' if (w.name =~ /^[A-Za-z]+$/) == 0
       end
     end
     str
+  end
+
+  private
+  def self.choice_word(word_ids, value)
+    return if word_ids.empty?
+    table = Hash.new
+    word_ids.each do |wi|
+      if wi == -1
+        table[nil] = 0.1
+        next
+      end
+      w = Word.find(wi)
+      table[w] = 1 - (value - w.value).abs
+    end
+    WeightedRandomizer.new(table).sample
   end
 end
 
@@ -102,23 +121,23 @@ class Dictionary
     end
     words
   end
-
-  def learn_value(words)
-    words.select! {|w| Array[0, 1, 2, 8].include? w.category}
-    return if words.empty?
-    ave = 0
-    words.each do |w|
-      ave += w.value
-    end
-    ave /= words.size
-    words.each do |w|
-      if w.value > ave
-        w.value -= (w.value - ave)/10.to_f
-      else
-        w.value += (ave - w.value)/10.to_f
-      end
+ 
+  def learn_value(words, learning_rate)
+    ave = average_of_value(words)
+    selected_words = select_words(words)
+    selected_words.each do |w|
+      w.value += (ave - w.value) * learning_rate
       w.save
     end
+  end
+
+  def select_words(words)
+    words.select {|w| Array[0, 1, 2, 8].include? w.category}
+  end
+
+  def average_of_value(words)
+    selected_words = select_words(words)
+    selected_words.map{ |v| v.value }.inject(:+)/selected_words.size.to_f
   end
 
   def set_value(input, value)
@@ -136,8 +155,8 @@ class Dictionary
     Markov.learn(words)
   end
 
-  def generate_markov(word_id)
-    Markov.generate(word_id)
+  def generate_markov(word_id, value: 0.5)
+    Markov.generate(word_id, value: value)
   end
 
   def add_friend(name, screen_name)
