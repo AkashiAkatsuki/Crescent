@@ -54,12 +54,15 @@ class Markov < ActiveRecord::Base
 
   private
   def self.choice_word(word_ids, value)
-    return -1 if word_ids.empty?
+    return if word_ids.empty?
     table = Hash.new
     word_ids.each do |wi|
-      next if wi == -1
+      if wi == -1
+        table[nil] = 0.1
+        next
+      end
       w = Word.find(wi)
-      table[w] = 1/(wi - w.value).abs
+      table[w] = 1 - (value - w.value).abs
     end
     WeightedRandomizer.new(table).sample
   end
@@ -120,17 +123,21 @@ class Dictionary
   end
  
   def learn_value(words, learning_rate)
-    words.select! {|w| Array[0, 1, 2, 8].include? w.category}
-    return if words.empty?
-    ave = words.map{ |v| v.value }.inject(:+)/words.size.to_f
-    words.each do |w|
-      if w.value > ave
-        w.value -= (w.value - ave) * learning_rate
-      else
-        w.value += (ave - w.value) * learning_rate
-      end
+    ave = average_of_value(words)
+    selected_words = select_words(words)
+    selected_words.each do |w|
+      w.value += (ave - w.value) * learning_rate
       w.save
     end
+  end
+
+  def select_words(words)
+    words.select {|w| Array[0, 1, 2, 8].include? w.category}
+  end
+
+  def average_of_value(words)
+    selected_words = select_words(words)
+    selected_words.map{ |v| v.value }.inject(:+)/selected_words.size.to_f
   end
 
   def set_value(input, value)
@@ -148,8 +155,8 @@ class Dictionary
     Markov.learn(words)
   end
 
-  def generate_markov(word_id)
-    Markov.generate(word_id)
+  def generate_markov(word_id, value: 0.5)
+    Markov.generate(word_id, value: value)
   end
 
   def add_friend(name, screen_name)

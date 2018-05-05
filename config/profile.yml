@@ -1,5 +1,5 @@
 name: Kuretsuki
-learning_rate: 0.5
+learning_rate: 0.1
 
 values:
   - name: 良い

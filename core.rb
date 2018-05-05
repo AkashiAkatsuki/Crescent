@@ -17,7 +17,7 @@ class Core
   end
 
   def listen(input, member: "", screen_name: "")
-    words = convert_words(input)
+    words = convert_words(input)[:words]
     if screen_name != ""
       @dic.add_friend(member, screen_name)
       add_trend(words.uniq)
@@ -28,9 +28,9 @@ class Core
 
   def response(input, member: "", screen_name: "")
     @dic.add_friend(member, screen_name) if screen_name != ""
-    words = convert_words(input)
-    return @dic.generate_markov(words.sample.id) unless words.empty?
-    return @dic.generate_markov(@trends.last.id) unless @trends.nil?
+    conv = convert_words(input)
+    return @dic.generate_markov(conv[:words].sample.id, value: conv[:value]) unless conv[:words].empty?
+    return @dic.generate_markov(@trends.last.id, value: conv[:value]) unless @trends.nil?
     'Zzz'
   end
   
@@ -57,7 +57,9 @@ class Core
     words = @dic.convert(input)
     @dic.learn_markov(words)
     @dic.learn_value(words, @learning_rate)
-    words.select {|w| Array[0, 8].include? w.category}
+    value = @dic.average_of_value(words)
+    words.select! {|w| Array[0, 8].include? w.category}
+    {words: words, value: value}
   end
   
   def add_trend(words)
