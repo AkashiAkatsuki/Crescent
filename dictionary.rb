@@ -109,10 +109,10 @@ class Dictionary
     end
     mecabs.each do |m|
       if m[:category].nil?
-        data = Word.new(id: -1, name: "EOS", category: -1, value: 0)
+        data = Word.new(id: -1, name: "EOS", category: -1, value: 0.5)
       else
         word = Word.find_or_create_by(name: m[:name], category: m[:category]) do |d|
-          d.value = 0
+          d.value = 0.5
           @new_words.push d.name
         end
         data = Word.find_by(name: m[:name], category:  m[:category])
