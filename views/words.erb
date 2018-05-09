@@ -13,7 +13,24 @@
     </form>
   </p>
   <table>
-    <tr><td>id</td><td>name</td><td>category</td><td>value</td></tr>
+    <tr>
+      <td>id
+	<a href=<%= url_order('id') %>>^</a>
+	<a href=<%= url_order('id%20desc') %>>V</a>
+      </td>
+      <td>name
+	<a href=<%= url_order('name') %>>^</a>
+	<a href=<%= url_order('name%20desc') %>>V</a>
+      </td>
+      <td>category
+	<a href=<%= url_order('category') %>>^</a>
+	<a href=<%= url_order('category%20desc') %>>V</a>
+      </td>
+      <td>value
+	<a href=<%= url_order('value') %>>^</a>
+	<a href=<%= url_order('value%20desc') %>>V</a>
+      </td>
+    </tr>
     <% @words.each do |word| %>
       <tr>
 	<td><%= word.id %></td>
