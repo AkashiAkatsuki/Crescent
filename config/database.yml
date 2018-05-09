@@ -1,6 +1,0 @@
----
-host: localhost
-user: kuretsuki
-password: kure
-dbname: kuredb
-port: '5432'
