@@ -121,11 +121,12 @@ class Dictionary
     end
     words
   end
- 
+
   def learn_value(words, learning_rate)
     ave = average_of_value(words)
     selected_words = select_words(words)
     selected_words.each do |w|
+      next if w.value == 1 || w.value == 0
       w.value += (ave - w.value) * learning_rate
       w.save
     end
