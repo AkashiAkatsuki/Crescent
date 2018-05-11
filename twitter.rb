@@ -61,7 +61,7 @@ class TwitterManager
   
   private
   def format_text(text)
-    text.gsub(Regexp.new("(\s|^)@[0-9a-zA-Z_]*"), "").gsub(URI.regexp, "").gsub(Regexp.new("#"), "")
+    text.gsub(Regexp.new("(\s|^)@[0-9a-zA-Z_]*"), "").gsub(URI.regexp, "").gsub(Regexp.new("#[0-9a-zA-Z_\-]+"), "")
   end
 
   def search_new_words
