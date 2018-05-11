@@ -22,6 +22,8 @@ values:
     value: 1
   - name: 可愛い
     value: 1
+  - name: 大好き
+    value: 1
   - name: 悪い
     value: 0
   - name: わるい
@@ -43,4 +45,10 @@ values:
   - name: クソ
     value: 0
   - name: 最悪
+    value: 0
+  - name: 大嫌い
+    value: 0
+  - name: イヤ
+    value: 0
+  - name: 嫌
     value: 0
