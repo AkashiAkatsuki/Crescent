@@ -20,7 +20,7 @@ class TwitterManager
     today = Time.now.mday
     logger = Logger.new('Logfile')
     begin
-      @client_stream.user do |tweet|
+      @client_stream.filter(follow: friend_ids_joined) do |tweet|
         if today != Time.now.mday
           followback
           today = Time.now.mday
@@ -77,6 +77,10 @@ class TwitterManager
       end
     end
     @core.clear_new_words
+  end
+
+  def friend_ids_joined
+    @client_rest.friend_ids.attrs[:ids].join(",")
   end
   
 end
