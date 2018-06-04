@@ -78,4 +78,7 @@ class Core
     @members.delete_at(0) if @members.size > 10
   end
 
+  def forget_old_words
+    @dic.forget_old_words
+  end
 end

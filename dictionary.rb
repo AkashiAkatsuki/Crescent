@@ -166,4 +166,12 @@ class Dictionary
     Friend.add_friend(name, screen_name)
   end
 
+  def forget_old_words
+    old_words = Word.where('updated_at < ?', 1.months.ago)
+    old_words.each do |w|
+      Markov.where('(prefix1 = ?) OR (prefix2 = ?) OR (suffix = ?)', w.id, w.id, w.id).delete_all
+      w.delete
+    end
+  end
+
 end

@@ -1,6 +1,7 @@
 #encoding: utf-8
 require 'pg'
 require 'yaml'
+require 'active_record'
 require './core.rb'
 
 desc 'default'
@@ -18,32 +19,29 @@ namespace :db do
   
   desc 'build table'
   task :table do
-    puts "Please 'rake db:config'"  unless yml = YAML.load_file("config/database.yml")
-    connection = PG::connect(yml)
-    if connection.exec("select relname from pg_class where relname = 'words';").ntuples == 0
-      connection.exec("
-create table words(
-id serial not null,
-name text not null,
-category int not null,
-value real not null);")
+    yml = YAML.load_file("config/database.yml")
+    yml[:adapter] = "postgresql"
+    ActiveRecord::Base.establish_connection(yml)
+    unless ActiveRecord::Base.connection.table_exists? :words
+      ActiveRecord::Base.connection.create_table :words do |t|
+        t.string :name
+        t.int :category
+        t.float :value, limit: 4
+      end
     end
-    if connection.exec("select relname from pg_class where relname = 'markovs';").ntuples == 0
-      connection.exec("
-create table markovs(
-id serial not null,
-prefix1 int not null,
-prefix2 int not null,
-suffix int not null);")  
+    unless ActiveRecord::Base.connection.table_exists? :markovs
+      ActiveRecord::Base.connection.create_table :markovs do |t|
+        t.int :prefix1
+        t.int :prefix2
+        t.int :suffix
+      end
     end
-    if connection.exec("select relname from pg_class where relname = 'friends';").ntuples == 0
-      connection.exec("
-create table friends(
-id serial not null,
-name text not null,
-screen_name text not null);")
+    unless ActiveRecord::Base.connection.table_exists? :friends
+      ActiveRecord::Base.connection.create_table :friends do |t|
+        t.text :name
+        t.text :screen_name
+      end
     end
-    connection.finish
   end
   
   desc 'database setting'
