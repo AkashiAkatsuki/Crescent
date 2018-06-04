@@ -22,6 +22,7 @@ class TwitterManager
     begin
       @client_stream.filter(follow: friend_ids_joined) do |tweet|
         if today != Time.now.mday
+          @core.forget
           followback
           today = Time.now.mday
         end
