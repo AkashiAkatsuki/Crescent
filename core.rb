@@ -29,7 +29,7 @@ class Core
   def response(input, member: "", screen_name: "")
     @dic.add_friend(member, screen_name) if screen_name != ""
     conv = convert_words(input)
-    return @dic.generate_markov(conv[:words].sample.id, value: conv[:value]) unless conv[:words].empty?
+    return @dic.generate_markov(conv[:words].sample, value: conv[:value]) unless conv[:words].empty?
     return @dic.generate_markov(@trends.last.id, value: conv[:value]) unless @trends.nil?
     'Zzz'
   end
@@ -41,7 +41,7 @@ class Core
       @wait_count = 0
       keyword = @trends.max_by {|w| @trends.count(w)}
       @trends.delete_at(@trends.index(keyword))
-      @dic.generate_markov(keyword.id)
+      @dic.generate_markov(keyword)
     end
   end
   

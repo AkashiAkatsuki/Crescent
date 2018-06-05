@@ -25,10 +25,9 @@ class Markov < ActiveRecord::Base
     end
   end
 
-  def self.generate(word_id, value: 0.5)
-    keyword = Word.find_by(id: word_id)
+  def self.generate(keyword, value: 0.5)
     seq = Array[keyword]
-    first_markovs = where("prefix1 = ?", word_id)
+    first_markovs = where("prefix1 = ?", keyword.id)
     first_ids = first_markovs.map { |m| m.prefix2 }
     first_word = choice_word(first_ids, value)
     return keyword.name if first_word.nil?
@@ -158,8 +157,8 @@ class Dictionary
     Markov.learn(words)
   end
 
-  def generate_markov(word_id, value: 0.5)
-    Markov.generate(word_id, value: value)
+  def generate_markov(keyword, value: 0.5)
+    Markov.generate(keyword, value: value)
   end
 
   def add_friend(name, screen_name)
