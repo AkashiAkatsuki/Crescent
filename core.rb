@@ -31,6 +31,7 @@ class Core
   def response(input, member: "", screen_name: "")
     @dic.add_friend(member, screen_name) if screen_name != ""
     conv = convert_words(input)
+    affect_mood(@dic.average_of_value(conv[:words]))
     return @dic.generate_markov(conv[:words].sample, value: conv[:value]) unless conv[:words].empty?
     return @dic.generate_markov(@trends.last.id, value: conv[:value]) unless @trends.nil?
     'Zzz'
