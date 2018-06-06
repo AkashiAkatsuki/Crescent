@@ -1,5 +1,6 @@
 name: Kuretsuki
 learning_rate: 0.3
+moody_rate: 0.8
 
 values:
   - name: 良い

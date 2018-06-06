@@ -14,6 +14,8 @@ class Core
     profile['values'].each do |word|
       @dic.set_value(word['name'], word['value'])
     end
+    @moody_rate = profile['moody_rate']
+    @mood = 0.5
   end
 
   def listen(input, member: "", screen_name: "")
@@ -41,7 +43,7 @@ class Core
       @wait_count = 0
       keyword = @trends.max_by {|w| @trends.count(w)}
       @trends.delete_at(@trends.index(keyword))
-      @dic.generate_markov(keyword)
+      @dic.generate_markov(keyword, @mood)
     end
   end
   
@@ -80,5 +82,10 @@ class Core
 
   def forget_old_words
     @dic.forget_old_words
+  end
+
+  private
+  def affect_mood(value)
+    @mood += (value - @mood) * @moody_rate
   end
 end
