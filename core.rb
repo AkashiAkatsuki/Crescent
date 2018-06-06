@@ -14,23 +14,27 @@ class Core
     profile['values'].each do |word|
       @dic.set_value(word['name'], word['value'])
     end
+    @moody_rate = profile['moody_rate']
+    @mood = 0.5
   end
 
   def listen(input, member: "", screen_name: "")
-    words = convert_words(input)[:words]
+    words = select_nouns(convert_words(input))
     if screen_name != ""
       @dic.add_friend(member, screen_name)
       add_trend(words.uniq)
       add_member(member)
-      words.collect{|w| w.name}
     end
   end
 
   def response(input, member: "", screen_name: "")
     @dic.add_friend(member, screen_name) if screen_name != ""
-    conv = convert_words(input)
-    return @dic.generate_markov(conv[:words].sample, value: conv[:value]) unless conv[:words].empty?
-    return @dic.generate_markov(@trends.last.id, value: conv[:value]) unless @trends.nil?
+    words = convert_words(input)
+    value = @dic.average_of_value(words)
+    affect_mood(value)
+    keywords = select_nouns(words)
+    return @dic.generate_markov(keywords.sample, value: value) unless keywords.empty?
+    return @dic.generate_markov(@trends.last, value: value) unless @trends.nil?
     'Zzz'
   end
   
@@ -41,7 +45,7 @@ class Core
       @wait_count = 0
       keyword = @trends.max_by {|w| @trends.count(w)}
       @trends.delete_at(@trends.index(keyword))
-      @dic.generate_markov(keyword)
+      @dic.generate_markov(keyword, @mood)
     end
   end
   
@@ -57,9 +61,11 @@ class Core
     words = @dic.convert(input)
     @dic.learn_markov(words)
     @dic.learn_value(words, @learning_rate)
-    value = @dic.average_of_value(words)
-    words.select! {|w| Array[0, 8].include? w.category}
-    {words: words, value: value}
+    words
+  end
+
+  def select_nouns(words)
+    words.select {|w| Array[0, 8].include? w.category}
   end
   
   def add_trend(words)
@@ -80,5 +86,9 @@ class Core
 
   def forget_old_words
     @dic.forget_old_words
+  end
+
+  def affect_mood(value)
+    @mood += (value - @mood) * @moody_rate
   end
 end
