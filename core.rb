@@ -45,7 +45,7 @@ class Core
       @wait_count = 0
       keyword = @trends.max_by {|w| @trends.count(w)}
       @trends.delete_at(@trends.index(keyword))
-      @dic.generate_markov(keyword, @mood)
+      @dic.generate_markov(keyword, value: @mood)
     end
   end
   
