@@ -30,6 +30,14 @@
 	<a href=<%= url_order('value') %>>^</a>
 	<a href=<%= url_order('value%20desc') %>>V</a>
       </td>
+      <td>created_at
+	<a href=<%= url_order('updated_at') %>>^</a>
+	<a href=<%= url_order('updated_at%20desc') %>>V</a>
+      </td>
+      <td>updated_at
+	<a href=<%= url_order('created_at') %>>^</a>
+	<a href=<%= url_order('created_at%20desc') %>>V</a>
+      </td>
     </tr>
     <% @words.each do |word| %>
       <tr>
@@ -37,6 +45,8 @@
 	<td><%= word.name %></td>
 	<td><%= @category_hash[word.category] %></td>
 	<td><%= word.value %></td>
+	<td><%= word.created_at.strftime("%Y-%m-%d") %></td>
+	<td><%= word.updated_at.strftime("%Y-%m-%d") %></td>
       </tr>
     <% end %>
   </table>
