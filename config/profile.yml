@@ -1,6 +1,14 @@
 name: Kuretsuki
 learning_rate: 0.3
 moody_rate: 0.8
+max_trends: 100
+max_speak_wait: 10
+none_reply: Zzz
+
+ignore_trends:
+  - の
+  - ん
+  - ー
 
 values:
   - name: 良い
