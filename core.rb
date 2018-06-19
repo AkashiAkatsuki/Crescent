@@ -24,13 +24,14 @@ class Core
   def listen(input, member: "", screen_name: "")
     words = select_nouns(convert_words(input))
     if screen_name != ""
+      @dic.add_friend(member, screen_name)
       add_trend(words.uniq)
-      add_member(member, screen_name)
+      add_member(member)
     end
   end
 
   def response(input, member: "", screen_name: "")
-    add_member(member, screen_name) if screen_name != ""
+    @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input)
     value = @dic.average_of_value(words)
     affect_mood(value)
@@ -80,8 +81,7 @@ class Core
     @trends.delete_at(0) while @trends.size > @max_trends
   end
   
-  def add_member(member, screen_name)
-    @dic.add_friend(member, screen_name)
+  def add_member(member)
     @members = Array.new if @members.nil?
     @members.push member
     @members.delete_at(0) if @members.size > @max_speak_wait
