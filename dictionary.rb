@@ -138,7 +138,7 @@ class Dictionary
   def average_of_value(words)
     selected_words = select_words(words)
     values = selected_words.map{ |v| v.value }
-    return 0 if values.empty?
+    return 0.5 if values.empty?
     values.inject(:+)/selected_words.size.to_f
   end
 
