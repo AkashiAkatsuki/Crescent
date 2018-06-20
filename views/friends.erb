@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+</html>
+
+<body>
+  <h1>Crescent</h1>
+  <p>
+    <form action="/freinds" method="get">
+      <input type="text" name="search">
+      <input type="submit" value="検索">
+    </form>
+  </p>
+  <table>
+    <tr>
+      <td>id
+	<a href=<%= url_order('id') %>>^</a>
+	<a href=<%= url_order('id%20desc') %>>V</a>
+      </td>
+      <td>name
+	<a href=<%= url_order('name') %>>^</a>
+	<a href=<%= url_order('name%20desc') %>>V</a>
+      </td>
+      <td>screen_name
+	<a href=<%= url_order('screen_name') %>>^</a>
+	<a href=<%= url_order('screen_name%20desc') %>>V</a>
+      </td>
+      <td>love
+	<a href=<%= url_order('love') %>>^</a>
+	<a href=<%= url_order('love%20desc') %>>V</a>
+      </td>
+    </tr>
+    <% @friends.each do |friend| %>
+      <tr>
+	<td><%= friend.id %></td>
+	<td><%= friend.name %></td>
+	<td><%= friend.screen_name %></td>
+	<td><%= friend.love %></td>
+      </tr>
+    <% end %>
+  </table>
+  <table>
+    <tr>
+      <%= paginate @friends %>
+    </tr>
+  </table>
+</body>
