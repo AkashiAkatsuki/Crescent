@@ -29,11 +29,28 @@ class WebPage < Sinatra::Base
     erb :words
   end
 
+  get '/friends' do
+    if params[:search]
+      f = Friend.where('name like ?', '%' + params[:search] + '%')
+    else
+      f = Friend.all
+    end
+    order = params[:order]
+    order = 'id' if order.nil?
+    order = 'id' unless [
+      'id', 'id desc',
+      'name', 'name desc',
+      'screen_name', 'screen_name desc',
+      'love', 'love desc'].include?(order)
+    @friends = f.order(order).page(params[:page]).per(100)
+    erb :friends
+  end
+
   private
   def url_order(order)
     query = { order: order, search: params[:search], page: params[:page] }
     query.reject!{ |k, v| v.nil? }
     p query
-    '/words?' + query.map{ |k, v| k.to_s + '=' + v }.join('&')
+    url + '?' + query.map{ |k, v| k.to_s + '=' + v }.join('&')
   end
 end
