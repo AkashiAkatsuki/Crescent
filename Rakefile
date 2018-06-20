@@ -40,6 +40,7 @@ namespace :db do
       ActiveRecord::Base.connection.create_table :friends do |t|
         t.text :name
         t.text :screen_name
+        t.float :love
       end
     end
   end
