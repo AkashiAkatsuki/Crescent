@@ -19,21 +19,24 @@ class Core
     @max_speak_wait = profile['max_speak_wait']
     @ignore_trends = profile['ignore_trends']
     @none_reply = profile['none_reply']
+    @love_rate_response = profile['love_rate_response']
+    @love_rate_listen = profile['love_rate_listen']
   end
 
   def listen(input, member: "", screen_name: "")
-    words = select_nouns(convert_words(input))
+    words = convert_words(input)
     if screen_name != ""
-      @dic.add_friend(member, screen_name)
-      add_trend(words.uniq)
+      value = average_of_value(words)
+      @dic.update_friend(member, screen_name, value, @love_rate_listen)
+      add_trend(select_nouns(words.uniq))
       add_member(member)
     end
   end
 
   def response(input, member: "", screen_name: "")
-    @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input)
     value = @dic.average_of_value(words)
+    @dic.update_friend(member, screen_name, value, @love_rate_response) if screen_name != ""
     affect_mood(value)
     keywords = select_nouns(words)
     return @dic.generate_markov(keywords.sample, value: value) unless keywords.empty?

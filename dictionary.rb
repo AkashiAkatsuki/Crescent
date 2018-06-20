@@ -68,14 +68,7 @@ class Markov < ActiveRecord::Base
 end
 
 class Friend < ActiveRecord::Base
-  self.primary_key = 'screen_name'
-  def self.add_friend(name, screen_name)
-    if friend = find_by(screen_name: screen_name)
-      friend.update(name: name)
-    else
-      create(name: name, screen_name: screen_name)
-    end
-  end
+  self.primary_key = 'id'
 end
 
 class Dictionary
@@ -161,8 +154,14 @@ class Dictionary
     Markov.generate(keyword, value: value)
   end
 
-  def add_friend(name, screen_name)
-    Friend.add_friend(name, screen_name)
+  def update_friend(name, screen_name, value, rate)
+    if friend = Friend.find_by(screen_name: screen_name)
+      love = friend.love + (value - friend.love) * rate
+      friend.update(name: name, love: love)
+    else
+      love = 0.5 + (value - 0.5) * rate
+      friend = Friend.create(name: name, screen_name: screen_name, love: love)
+    end
   end
 
   def forget_old_words
