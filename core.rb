@@ -4,7 +4,6 @@ require './dictionary.rb'
 
 class Core
   attr_reader :name
-  IGNORE_TREND = ["の", "ん", "ー"].freeze
   
   def initialize
     profile = YAML.load_file("config/profile.yml")
@@ -16,26 +15,33 @@ class Core
     end
     @moody_rate = profile['moody_rate']
     @mood = 0.5
+    @max_trends = profile['max_trends']
+    @max_speak_wait = profile['max_speak_wait']
+    @ignore_trends = profile['ignore_trends']
+    @none_reply = profile['none_reply']
+    @love_rate_response = profile['love_rate_response']
+    @love_rate_listen = profile['love_rate_listen']
   end
 
   def listen(input, member: "", screen_name: "")
-    words = select_nouns(convert_words(input))
+    words = convert_words(input)
     if screen_name != ""
-      @dic.add_friend(member, screen_name)
-      add_trend(words.uniq)
+      value = average_of_value(words)
+      @dic.update_friend(member, screen_name, value, @love_rate_listen)
+      add_trend(select_nouns(words.uniq))
       add_member(member)
     end
   end
 
   def response(input, member: "", screen_name: "")
-    @dic.add_friend(member, screen_name) if screen_name != ""
     words = convert_words(input)
     value = @dic.average_of_value(words)
+    @dic.update_friend(member, screen_name, value, @love_rate_response) if screen_name != ""
     affect_mood(value)
     keywords = select_nouns(words)
     return @dic.generate_markov(keywords.sample, value: value) unless keywords.empty?
     return @dic.generate_markov(@trends.last, value: value) unless @trends.nil?
-    'Zzz'
+    @none_reply
   end
   
   def speak
@@ -69,19 +75,19 @@ class Core
   end
   
   def add_trend(words)
-    words.delete_if {|w| IGNORE_TREND.include?(w.name)}
+    words.delete_if {|w| @ignore_trends.include?(w.name)}
     if @trends.nil?
       @trends = words
     else
       @trends.concat words
     end
-    @trends.delete_at(0) while @trends.size > 100
+    @trends.delete_at(0) while @trends.size > @max_trends
   end
   
   def add_member(member)
     @members = Array.new if @members.nil?
     @members.push member
-    @members.delete_at(0) if @members.size > 10
+    @members.delete_at(0) if @members.size > @max_speak_wait
   end
 
   def forget_old_words
