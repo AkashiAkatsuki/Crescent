@@ -23,14 +23,16 @@ class Core
     @love_rate_listen = profile['love_rate_listen']
   end
 
+  def search
+    convert_words(input)
+  end
+
   def listen(input, member: "", screen_name: "")
     words = convert_words(input)
-    if screen_name != ""
-      value = average_of_value(words)
-      @dic.update_friend(member, screen_name, value, @love_rate_listen)
-      add_trend(select_nouns(words.uniq))
-      add_member(member)
-    end
+    value = average_of_value(words)
+    @dic.update_friend(member, screen_name, value, @love_rate_listen)
+    add_trend(select_nouns(words.uniq))
+    add_member(member)
   end
 
   def response(input, member: "", screen_name: "")

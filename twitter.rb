@@ -73,7 +73,7 @@ class TwitterManager
                             result_type: "popular",
                             locale: "ja",
                             count: @config['search_amount']).each do |search|
-          @core.listen(format_text(search.text))
+          @core.search(format_text(search.text))
         end
       end
     end
