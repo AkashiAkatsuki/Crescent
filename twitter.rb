@@ -3,6 +3,7 @@ require 'bundler'
 require 'yaml'
 require 'uri'
 require './core.rb'
+require './dictionary.rb'
 Bundler.require
 
 class TwitterManager
@@ -19,6 +20,7 @@ class TwitterManager
   def stream_start
     today = Time.now.mday
     logger = Logger.new('Logfile')
+    binding.pry
     begin
       @client_stream.filter(follow: friend_ids_joined) do |tweet|
         if today != Time.now.mday
@@ -55,8 +57,16 @@ class TwitterManager
   end
   
   def followback
-    @client_rest.followers.each do |user|
-      @client_rest.follow user.screen_name unless user.following?
+    screen_names = Array.new
+      @client_rest.followers.each do |user|
+        begin
+          @client_rest.follow user.screen_name unless user.following?
+          screen_names.push user.screen_name
+        rescue Twitter::Error::NotFound => e
+        end
+      end
+    if unfollowed = Friend.where.not(screen_name: screen_names)
+      unfollowed.delete_all
     end
   end
   
