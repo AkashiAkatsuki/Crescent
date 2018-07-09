@@ -9,10 +9,16 @@ yml[:adapter] = "postgresql"
 ActiveRecord::Base.establish_connection(yml)
 
 class Word < ActiveRecord::Base
+  has_many :prefix1, class_name: 'Markov', dependent: :destroy, foreign_key: :prefix1
+  has_many :prefix2, class_name: 'Markov', dependent: :destroy, foreign_key: :prefix2
+  has_many :suffix, class_name: 'Markov', dependent: :destroy, foreign_key: :suffix
   self.primary_key = 'id'
 end
 
 class Markov < ActiveRecord::Base
+  belongs_to :pre1_word, class_name: 'Word', foreign_key: :prefix1
+  belongs_to :pre2_word, class_name: 'Word', foreign_key: :prefix2
+  belongs_to :suf_word, class_name: 'Word', foreign_key: :suffix
   self.primary_key = 'id'
   CHAIN_MAX = 10
   def self.learn(words)
@@ -165,11 +171,7 @@ class Dictionary
   end
 
   def forget_old_words
-    old_words = Word.where('updated_at < ? AND created_at > ?', 1.months.ago, 3.months.ago)
-    old_words.each do |w|
-      Markov.where('(prefix1 = ?) OR (prefix2 = ?) OR (suffix = ?)', w.id, w.id, w.id).delete_all
-      w.delete
-    end
+    old_words = Word.where('updated_at < ? AND created_at > ?', 1.months.ago, 3.months.ago).destroy_all
   end
 
 end
