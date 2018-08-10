@@ -23,7 +23,9 @@ class WebPage < Sinatra::Base
       'id', 'id desc',
       'name', 'name desc',
       'category', 'category desc',
-      'value', 'value desc'].include?(order)
+      'value', 'value desc',
+      'created_at', 'created_at desc',
+      'updated_at', 'updated_at desc'].include?(order)
     @words = w.order(order).page(params[:page]).per(100)
     @category_hash = Dictionary::CATEGORY_HASH.invert
     erb :words
