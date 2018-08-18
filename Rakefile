@@ -25,15 +25,15 @@ namespace :db do
     unless ActiveRecord::Base.connection.table_exists? :words
       ActiveRecord::Base.connection.create_table :words do |t|
         t.string :name
-        t.int :category
+        t.integer :category
         t.float :value, limit: 4
       end
     end
     unless ActiveRecord::Base.connection.table_exists? :markovs
       ActiveRecord::Base.connection.create_table :markovs do |t|
-        t.int :prefix1
-        t.int :prefix2
-        t.int :suffix
+        t.integer :prefix1
+        t.integer :prefix2
+        t.integer :suffix
       end
     end
     unless ActiveRecord::Base.connection.table_exists? :friends
