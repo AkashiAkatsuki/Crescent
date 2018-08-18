@@ -27,6 +27,8 @@ namespace :db do
         t.string :name
         t.integer :category
         t.float :value, limit: 4
+        t.timestamp :created_at, null: false
+        t.timestamp :updated_at, null: false
       end
     end
     unless ActiveRecord::Base.connection.table_exists? :markovs
