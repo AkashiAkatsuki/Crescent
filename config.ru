@@ -11,7 +11,4 @@ class App < Sinatra::Base
   }
 end
 
-Thread.new do
-  TwitterManager.new(Core.new).stream_start
-end
 run Rack::URLMap.new(App::ROUTES)
