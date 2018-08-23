@@ -23,7 +23,7 @@ class Core
     @love_rate_listen = profile['love_rate_listen']
   end
 
-  def search
+  def search(input)
     convert_words(input)
   end
 
