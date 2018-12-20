@@ -7,7 +7,7 @@ class Core
   
   def initialize
     profile = YAML.load_file("config/profile.yml")
-    @dic = Dictionary.new
+    @dic = Dictionary.new(ng_words: profile["ng_words"])
     @name = profile['name']
     @learning_rate = profile['learning_rate']
     profile['values'].each do |word|

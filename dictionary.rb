@@ -93,9 +93,10 @@ class Dictionary
     "*" => 9
   }
 
-  def initialize
+  def initialize(ng_words: [])
     @mecab = Natto::MeCab.new
     @new_words = Array.new
+    @ng_words = ng_words
   end
 
   def convert(input)
@@ -110,12 +111,13 @@ class Dictionary
         data = Word.new(id: -1, name: "EOS", category: -1, value: 0.5)
       else
         word = Word.find_or_create_by(name: m[:name], category: m[:category]) do |d|
+          break if @ng_words.include?(d.name)
           d.value = 0.5
           @new_words.push d.name
         end
         data = Word.find_by(name: m[:name], category:  m[:category])
       end
-      words.push data
+      words.push data if data
     end
     words
   end
