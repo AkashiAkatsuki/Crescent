@@ -166,9 +166,6 @@ class Dictionary
     if friend = Friend.find_by(screen_name: screen_name)
       love = friend.love + (value - friend.love) * rate
       friend.update(name: name, love: love)
-    else
-      love = 0.5 + (value - 0.5) * rate
-      friend = Friend.create(name: name, screen_name: screen_name, love: love)
     end
   end
 

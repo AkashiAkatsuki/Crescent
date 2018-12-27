@@ -4,7 +4,6 @@ require 'yaml'
 require 'uri'
 require './core.rb'
 require './dictionary.rb'
-Bundler.require
 
 class TwitterManager
 
@@ -20,6 +19,7 @@ class TwitterManager
   def stream_start
     today = Time.now.mday
     logger = Logger.new('Logfile')
+    followback
     begin
       @client_stream.filter(follow: friend_ids_joined) do |tweet|
         if today != Time.now.mday
@@ -55,12 +55,17 @@ class TwitterManager
     end
   end
   
+  private
   def followback
     screen_names = Array.new
-      @client_rest.followers.each do |user|
+      @client_rest.followers(count: 200).each do |user|
         begin
           @client_rest.follow user.screen_name unless user.following?
           screen_names.push user.screen_name
+          Friend.find_or_create_by(screen_name: user.screen_name) do |f|
+            f.name = user.name
+            f.love = 0.5
+          end
         rescue Twitter::Error::NotFound => e
         end
       end
@@ -69,7 +74,6 @@ class TwitterManager
     end
   end
   
-  private
   def format_text(text)
     text.gsub(Regexp.new("(\s|^)@[0-9a-zA-Z_]*"), "").gsub(URI.regexp, "").gsub(Regexp.new("#[0-9a-zA-Z_\-]+"), "")
   end
