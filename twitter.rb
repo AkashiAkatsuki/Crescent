@@ -19,7 +19,6 @@ class TwitterManager
   def stream_start
     today = Time.now.mday
     logger = Logger.new('Logfile')
-    followback
     begin
       @client_stream.filter(follow: friend_ids_joined) do |tweet|
         if today != Time.now.mday
