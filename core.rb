@@ -30,7 +30,7 @@ class Core
   def listen(input, member: "", screen_name: "")
     words = convert_words(input)
     value = @dic.average_of_value(words)
-    @dic.update_friend(member, screen_name, value, @love_rate_listen)
+    @dic.update_friend(member, screen_name, value, @love_rate_listen) unless member == ""
     add_trend(select_nouns(words.uniq))
     add_member(member)
   end

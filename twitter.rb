@@ -38,9 +38,7 @@ class TwitterManager
                                 in_reply_to_status_id: tweet.id)
           else
             #timeline
-            @core.listen(format_text(tweet.text),
-                         member: tweet.user.name,
-                         screen_name: tweet.user.screen_name)
+            @core.listen(format_text(tweet.text))
             search_new_words
             speak = @core.speak
             @client_rest.update(speak) if speak
